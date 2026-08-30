@@ -1,0 +1,251 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #15171B;
+    color: #F2EFE9;
+  }
+
+  button,
+  [role="button"],
+  a,
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"],
+  select,
+  option,
+  label,
+  .cursor-pointer {
+    cursor: pointer !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   PREMIUM ANIMATION LIBRARY — GET ALONG
+   ═══════════════════════════════════════════════════ */
+
+/* --- Page Blur Transitions --- */
+@keyframes blurIn {
+  from { filter: blur(6px); opacity: 0.15; transform: translateY(4px); }
+  to   { filter: blur(0px); opacity: 1; transform: translateY(0); }
+}
+@keyframes blurOut {
+  from { filter: blur(0px); opacity: 1; }
+  to   { filter: blur(6px); opacity: 0; }
+}
+.animate-blur-in {
+  animation: blurIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-blur-out {
+  animation: blurOut 0.12s ease-in forwards;
+}
+
+/* --- Staggered Card Slide-Up Entry --- */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* --- Shimmer Sweep (for title, buttons) --- */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+/* --- Ambient Glow Pulse --- */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 8px var(--glow-color, rgba(242, 183, 5, 0.3)); }
+  50%      { box-shadow: 0 0 16px var(--glow-color, rgba(242, 183, 5, 0.5)); }
+}
+.animate-glow {
+  animation: glowPulse 2.5s ease-in-out infinite;
+}
+
+/* --- Status Dot Pulse --- */
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.4); opacity: 0.6; }
+}
+.animate-dot-pulse {
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+/* --- Theme Toggle Spin --- */
+@keyframes toggleSpin {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+.animate-toggle-spin {
+  animation: toggleSpin 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --- Route Line Draw --- */
+@keyframes drawLine {
+  from { stroke-dashoffset: 100%; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* --- Fade In (simple) --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fadein {
+  animation: fadeIn 0.22s ease-out;
+}
+
+/* --- Tab Underline Slide --- */
+@keyframes tabSlide {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ═══════════════════════════════════════════════════
+   GLASSMORPHISM UTILITIES
+   ═══════════════════════════════════════════════════ */
+
+.glass-card {
+  background: rgba(30, 33, 38, 0.65) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.glass-surface {
+  background: rgba(30, 33, 38, 0.45) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+.glass-nav {
+  background: rgba(21, 23, 27, 0.7) !important;
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   PREMIUM CARD STYLES
+   ═══════════════════════════════════════════════════ */
+
+.ride-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s ease;
+}
+
+.ride-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-color, #F2B705);
+  opacity: 0.7;
+  transition: opacity 0.25s ease;
+}
+
+.ride-card:hover {
+  transform: translateY(-3px) scale(1.005);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35),
+              0 0 20px var(--glow-color, rgba(242, 183, 5, 0.12));
+}
+
+.ride-card:hover::before {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════
+   PREMIUM INPUT STYLES
+   ═══════════════════════════════════════════════════ */
+
+.premium-input:focus {
+  box-shadow: 0 0 0 2px rgba(242, 183, 5, 0.25),
+              0 0 12px rgba(242, 183, 5, 0.1);
+  border-color: rgba(242, 183, 5, 0.4) !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   PREMIUM BUTTON STYLES
+   ═══════════════════════════════════════════════════ */
+
+.premium-btn {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.premium-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  animation: shimmer 2.5s ease-in-out infinite;
+}
+
+.premium-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(242, 183, 5, 0.35);
+}
+
+/* ═══════════════════════════════════════════════════
+   AVATAR RING GLOW
+   ═══════════════════════════════════════════════════ */
+
+.avatar-ring {
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.3),
+              0 0 12px var(--avatar-color, rgba(242, 183, 5, 0.4));
+  border-radius: 9999px;
+}
+
+/* ═══════════════════════════════════════════════════
+   GRADIENT TEXT (for header)
+   ═══════════════════════════════════════════════════ */
+
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    #F2B705 0%,
+    #FFD54F 25%,
+    #F2B705 50%,
+    #D9622B 75%,
+    #F2B705 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════ */
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
