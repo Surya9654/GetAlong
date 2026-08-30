@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { X, Sparkles, MapPin, Calendar, Clock, Gauge, Compass } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Sparkles, MapPin, Calendar, Clock, Gauge, Compass, Navigation } from 'lucide-react';
+import MapLocationPicker from './MapLocationPicker.jsx';
 
 const RIDE_PRESETS = [
   {
@@ -10,7 +11,7 @@ const RIDE_PRESETS = [
     time: '5:30 AM',
     distanceKm: 120,
     maxRiders: 10,
-    points: ['Chennai (ECR Start)', 'Mahabalipuram Beach Shack', 'Chennai Return'],
+    points: ['Chennai (ECR Start)', 'Mahabalipuram Beach Shack', 'Pondicherry Promenade'],
     description: 'Early morning coastal cruise down ECR for fresh filter coffee and breakfast by the waves. Return before traffic picks up.',
   },
   {
@@ -38,11 +39,15 @@ const RIDE_PRESETS = [
 ];
 
 export default function HostRideModal({ onHostRide, onClose }) {
+  const [isClosing, setIsClosing] = useState(false);
+  const [showMapPicker, setShowMapPicker] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState(RIDE_PRESETS[0]);
   const [formData, setFormData] = useState({
     title: RIDE_PRESETS[0].title,
     date: new Date(Date.now() + 86400000 * 5).toISOString().split('T')[0],
     time: RIDE_PRESETS[0].time,
+    startLocation: 'Chennai Toll Gate',
+    destinationLocation: 'Pondicherry Promenade',
     distanceKm: RIDE_PRESETS[0].distanceKm,
     difficulty: RIDE_PRESETS[0].difficulty,
     maxRiders: RIDE_PRESETS[0].maxRiders,
@@ -50,12 +55,31 @@ export default function HostRideModal({ onHostRide, onClose }) {
     pointsStr: RIDE_PRESETS[0].points.join(', '),
   });
 
+  // Lock background scroll while popup is active
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
   const applyPreset = (preset) => {
     setSelectedPreset(preset);
+    const start = preset.points[0] || 'Start Point';
+    const dest = preset.points[preset.points.length - 1] || 'Destination';
     setFormData((prev) => ({
       ...prev,
       title: preset.title,
       time: preset.time,
+      startLocation: start,
+      destinationLocation: dest,
       distanceKm: preset.distanceKm,
       difficulty: preset.difficulty,
       maxRiders: preset.maxRiders,
@@ -66,7 +90,11 @@ export default function HostRideModal({ onHostRide, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const pointsArr = formData.pointsStr.split(',').map((p) => p.trim()).filter(Boolean);
+    const customPoints = [formData.startLocation, formData.destinationLocation].filter(Boolean);
+    const pointsArr = formData.pointsStr
+      ? formData.pointsStr.split(',').map((p) => p.trim()).filter(Boolean)
+      : customPoints;
+
     onHostRide({
       ...formData,
       distanceKm: Number(formData.distanceKm),
@@ -112,14 +140,14 @@ export default function HostRideModal({ onHostRide, onClose }) {
         justifyContent: 'center',
         padding: '16px',
       }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
-        className="glass-panel animate-host-expand"
+        className={`glass-panel ${isClosing ? 'animate-host-collapse' : 'animate-host-expand'}`}
         onClick={(e) => e.stopPropagation()}
         style={{
           width: '100%',
-          maxWidth: '560px',
+          maxWidth: '580px',
           maxHeight: '90vh',
           overflowY: 'auto',
           borderRadius: 'var(--radius-lg)',
@@ -139,7 +167,7 @@ export default function HostRideModal({ onHostRide, onClose }) {
             </h2>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="ios-pressable"
             style={{
               backgroundColor: 'var(--surface-raised)',
@@ -206,6 +234,84 @@ export default function HostRideModal({ onHostRide, onClose }) {
             />
           </div>
 
+          {/* Simplified Start (S) & Destination (D) Google Maps Location Selector */}
+          <div style={{ backgroundColor: 'var(--surface-raised)', borderRadius: 'var(--radius-sm)', padding: '14px', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', fontWeight: 800, color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <MapPin size={15} color="var(--amber)" /> Route Selection (S ➔ D)
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowMapPicker(!showMapPicker)}
+                className="ios-pressable"
+                style={{
+                  backgroundColor: 'var(--amber)',
+                  color: '#0B0E11',
+                  border: 'none',
+                  borderRadius: 'var(--radius-full)',
+                  padding: '4px 10px',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <Navigation size={12} /> {showMapPicker ? 'Close Map' : '🗺️ Pick on Google Maps'}
+              </button>
+            </div>
+
+            {/* Start (S) & Destination (D) Inputs */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#10B981', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+                  🟢 Start (S)
+                </span>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Chennai Toll Gate"
+                  value={formData.startLocation}
+                  onChange={(e) => setFormData({ ...formData, startLocation: e.target.value })}
+                  style={inputStyle}
+                />
+              </div>
+
+              <div>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--hardcore-red)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+                  🔴 Destination (D)
+                </span>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Pondicherry Beach"
+                  value={formData.destinationLocation}
+                  onChange={(e) => setFormData({ ...formData, destinationLocation: e.target.value })}
+                  style={inputStyle}
+                />
+              </div>
+            </div>
+
+            {/* Interactive Map Picker Toggle */}
+            {showMapPicker && (
+              <div style={{ marginTop: '12px', borderTop: '1px solid var(--border-color)', paddingTop: '12px' }}>
+                <MapLocationPicker
+                  onLocationsSelected={(start, dest, distKm) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      startLocation: start || prev.startLocation,
+                      destinationLocation: dest || prev.destinationLocation,
+                      distanceKm: distKm || prev.distanceKm,
+                      pointsStr: `${start || prev.startLocation}, ${dest || prev.destinationLocation}`,
+                    }));
+                    setShowMapPicker(false);
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
           {/* Date & Time Row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
@@ -243,7 +349,7 @@ export default function HostRideModal({ onHostRide, onClose }) {
               />
             </div>
             <div>
-              <label style={labelStyle}>Pace / Difficulty Dropdown</label>
+              <label style={labelStyle}>Pace / Difficulty</label>
               <select
                 value={formData.difficulty}
                 onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
@@ -254,19 +360,6 @@ export default function HostRideModal({ onHostRide, onClose }) {
                 <option value="hardcore">Hardcore (Expert Pace)</option>
               </select>
             </div>
-          </div>
-
-          {/* Waypoints */}
-          <div>
-            <label style={labelStyle}>Route Waypoints (Comma separated)</label>
-            <input
-              type="text"
-              required
-              value={formData.pointsStr}
-              onChange={(e) => setFormData({ ...formData, pointsStr: e.target.value })}
-              placeholder="e.g. Start Point, Breakfast Stop, Final Stop"
-              style={inputStyle}
-            />
           </div>
 
           {/* Description */}

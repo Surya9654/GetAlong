@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CheckCircle2, ShieldCheck, Bike, AlertCircle, Zap } from 'lucide-react';
 
 export default function QuickJoinSheet({ ride, primaryBike, sosConfigured, onConfirm, onClose }) {
   const [selectedBike, setSelectedBike] = useState(
     primaryBike?.model ? `${primaryBike.make} ${primaryBike.model}` : 'Royal Enfield Himalayan 450'
   );
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   if (!ride) return null;
 
