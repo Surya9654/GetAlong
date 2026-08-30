@@ -129,20 +129,15 @@ select option {
   transition: all 0.38s var(--liquid-ease);
 }
 
-/* Directional Horizontal Slide Animations (Left / Right relative to mode position) */
+/* Directional Horizontal Slide Animations (Left / Right relative to mode position - Crisp No Blur) */
 @keyframes slideInFromRight {
   0% {
     opacity: 0;
     transform: translateX(110px);
-    filter: blur(12px);
-  }
-  50% {
-    filter: blur(4px);
   }
   100% {
     opacity: 1;
     transform: translateX(0);
-    filter: blur(0);
   }
 }
 
@@ -150,15 +145,10 @@ select option {
   0% {
     opacity: 0;
     transform: translateX(-110px);
-    filter: blur(12px);
-  }
-  50% {
-    filter: blur(4px);
   }
   100% {
     opacity: 1;
     transform: translateX(0);
-    filter: blur(0);
   }
 }
 
