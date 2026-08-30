@@ -146,7 +146,7 @@ export default function App() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-color)', color: 'var(--text-primary)', pb: '40px' }}>
-      {/* iOS Frosted Navigation Bar */}
+      {/* iOS Liquid Navigation Header */}
       <header
         className="glass-header"
         style={{
@@ -164,7 +164,7 @@ export default function App() {
           className="ios-pressable"
           style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
         >
-          <div style={{ width: '38px', height: '38px', borderRadius: '12px', backgroundColor: 'var(--amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 15px var(--amber-glow)' }}>
+          <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'var(--amber-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 15px var(--amber-glow)' }}>
             <Compass size={22} color="#0B0E11" />
           </div>
           <div>
@@ -172,8 +172,8 @@ export default function App() {
               <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.3px', color: 'var(--text-primary)' }}>
                 GET ALONG
               </span>
-              <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--amber)', color: '#0B0E11', fontWeight: 800, padding: '2px 7px', borderRadius: 'var(--radius-full)' }}>
-                iOS v2
+              <span style={{ fontSize: '0.65rem', background: 'var(--amber-gradient)', color: '#0B0E11', fontWeight: 800, padding: '2px 7px', borderRadius: 'var(--radius-full)' }}>
+                v2.0
               </span>
             </div>
           </div>
@@ -182,9 +182,9 @@ export default function App() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
             onClick={() => setShowHostModal(true)}
-            className="ios-pressable"
+            className={`ios-pressable liquid-pill ${showHostModal ? 'liquid-pill-active' : ''}`}
             style={{
-              backgroundColor: showHostModal ? 'var(--amber)' : 'var(--surface-raised)',
+              backgroundColor: showHostModal ? 'transparent' : 'var(--surface-raised)',
               color: showHostModal ? '#0B0E11' : 'var(--text-primary)',
               border: showHostModal ? '1px solid var(--amber)' : '1px solid var(--border-color)',
               borderRadius: 'var(--radius-full)',
@@ -196,7 +196,6 @@ export default function App() {
               alignItems: 'center',
               gap: '6px',
               cursor: 'pointer',
-              boxShadow: showHostModal ? '0 4px 15px var(--amber-glow)' : 'none',
             }}
           >
             <PlusCircle size={16} color={showHostModal ? '#0B0E11' : 'var(--text-primary)'} /> Host
@@ -204,9 +203,9 @@ export default function App() {
 
           <button
             onClick={() => setCurrentTab(currentTab === 'account' ? 'feed' : 'account')}
-            className="ios-pressable"
+            className={`ios-pressable liquid-pill ${currentTab === 'account' ? 'liquid-pill-active' : ''}`}
             style={{
-              backgroundColor: currentTab === 'account' ? 'var(--amber)' : 'var(--surface-raised)',
+              backgroundColor: currentTab === 'account' ? 'transparent' : 'var(--surface-raised)',
               color: currentTab === 'account' ? '#0B0E11' : 'var(--text-primary)',
               border: '1px solid var(--border-color)',
               borderRadius: 'var(--radius-full)',
@@ -219,7 +218,7 @@ export default function App() {
               fontSize: '0.86rem',
             }}
           >
-            <User size={16} /> Profile
+            <User size={16} color={currentTab === 'account' ? '#0B0E11' : 'var(--text-primary)'} /> Profile
           </button>
 
           <button
@@ -243,10 +242,10 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Content Area with Page Transitions */}
+      {/* Main Content Area with Blur-Out & Blur-In Page Navigation */}
       <main style={{ maxWidth: '680px', margin: '0 auto', padding: '24px 16px' }}>
         {currentTab === 'account' ? (
-          <div key="account-tab" className="animate-page-slide">
+          <div key="account-tab" className="animate-liquid-blur-in">
             <MyAccount
               userProfile={userProfile}
               onClose={() => setCurrentTab('feed')}
@@ -254,11 +253,11 @@ export default function App() {
             />
           </div>
         ) : currentTab === 'details' && selectedRide ? (
-          <div key="details-tab" className="animate-page-slide">
+          <div key="details-tab" className="animate-liquid-blur-in">
             {/* Back Navigation Button */}
             <button
               onClick={() => setCurrentTab('feed')}
-              className="ios-pressable"
+              className="ios-pressable liquid-pill"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -313,7 +312,7 @@ export default function App() {
             />
           </div>
         ) : (
-          <div key="feed-tab" className="animate-page-back">
+          <div key="feed-tab" className="animate-liquid-blur-in">
             {/* Live Ride-Day Banner */}
             {todayRide && (
               <RideDayBanner
@@ -325,11 +324,10 @@ export default function App() {
               />
             )}
 
-            {/* iOS Segmented Control Pills Bar */}
+            {/* Liquid Flow Segmented Filter Pills Bar */}
             <div
+              className="glass-panel"
               style={{
-                backgroundColor: 'var(--surface-raised)',
-                border: '1px solid var(--border-color)',
                 borderRadius: 'var(--radius-full)',
                 padding: '4px',
                 display: 'grid',
@@ -344,20 +342,19 @@ export default function App() {
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
-                    className="ios-pressable"
+                    className={`ios-pressable liquid-pill ${isActive ? 'liquid-pill-active' : ''}`}
                     style={{
-                      backgroundColor: isActive ? 'var(--amber)' : 'transparent',
-                      color: isActive ? '#0B0E11' : 'var(--text-muted)',
+                      backgroundColor: isActive ? 'transparent' : 'transparent',
+                      color: isActive ? '#07090C' : 'var(--text-muted)',
                       border: 'none',
                       borderRadius: 'var(--radius-full)',
-                      padding: '8px 0',
+                      padding: '9px 0',
                       fontSize: '0.82rem',
                       fontFamily: 'var(--font-heading)',
                       fontWeight: isActive ? 800 : 600,
                       cursor: 'pointer',
                       textTransform: 'capitalize',
                       textAlign: 'center',
-                      boxShadow: isActive ? '0 3px 12px var(--amber-glow)' : 'none',
                     }}
                   >
                     {f === 'all' ? 'All Rides' : f}

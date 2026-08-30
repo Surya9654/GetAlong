@@ -200,11 +200,10 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
         </div>
       )}
 
-      {/* iOS Segmented Tab Bar Header */}
+      {/* iOS Liquid Segmented Tab Bar Header */}
       <div
+        className="glass-panel"
         style={{
-          backgroundColor: 'var(--surface-raised)',
-          border: '1px solid var(--border-color)',
           borderRadius: 'var(--radius-full)',
           padding: '4px',
           display: 'grid',
@@ -224,13 +223,13 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="ios-pressable"
+              className={`ios-pressable liquid-pill ${isActive ? 'liquid-pill-active' : ''}`}
               style={{
-                backgroundColor: isActive ? 'var(--amber)' : 'transparent',
-                color: isActive ? '#0B0E11' : 'var(--text-muted)',
+                backgroundColor: isActive ? 'transparent' : 'transparent',
+                color: isActive ? '#07090C' : 'var(--text-muted)',
                 border: 'none',
                 borderRadius: 'var(--radius-full)',
-                padding: '8px 0',
+                padding: '9px 0',
                 fontSize: '0.82rem',
                 fontFamily: 'var(--font-heading)',
                 fontWeight: isActive ? 800 : 600,
@@ -239,10 +238,9 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '6px',
-                boxShadow: isActive ? '0 3px 12px var(--amber-glow)' : 'none',
               }}
             >
-              <Icon size={14} color={isActive ? '#0B0E11' : 'var(--text-muted)'} />
+              <Icon size={14} color={isActive ? '#07090C' : 'var(--text-muted)'} />
               {tab.label}
             </button>
           );

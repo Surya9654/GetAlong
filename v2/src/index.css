@@ -11,7 +11,8 @@
   --text-muted: #94A3B8;
   --text-faint: #64748B;
   --amber: #F2B705;
-  --amber-glow: rgba(242, 183, 5, 0.3);
+  --amber-gradient: linear-gradient(135deg, #F2B705 0%, #FFD036 50%, #D98B00 100%);
+  --amber-glow: rgba(242, 183, 5, 0.35);
   --rust: #E05628;
   --moss: #10B981;
   --hardcore-red: #EF4444;
@@ -23,7 +24,7 @@
   --radius-full: 9999px;
   --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-  --ios-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --liquid-ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 [data-theme='day'] {
@@ -39,6 +40,7 @@
   --text-muted: #475569;
   --text-faint: #94A3B8;
   --amber: #D98B00;
+  --amber-gradient: linear-gradient(135deg, #F2B705 0%, #D98B00 100%);
   --amber-glow: rgba(217, 139, 0, 0.3);
   --rust: #C44E1A;
   --moss: #059669;
@@ -56,8 +58,8 @@
 body {
   background-color: var(--bg-color);
   background-image: 
-    radial-gradient(circle at 15% 15%, rgba(242, 183, 5, 0.06) 0%, transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
+    radial-gradient(circle at 15% 15%, rgba(242, 183, 5, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.06) 0%, transparent 45%);
   background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-body);
@@ -98,7 +100,7 @@ select, input, textarea {
   color: var(--text-primary) !important;
   border-radius: var(--radius-sm);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.25s var(--liquid-ease), box-shadow 0.25s var(--liquid-ease);
 }
 
 select:focus, input:focus, textarea:focus {
@@ -107,76 +109,101 @@ select:focus, input:focus, textarea:focus {
   box-shadow: 0 0 0 3px var(--amber-glow), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
-/* Translucent Select Option Styling */
 select option {
   background-color: #11151D !important;
   color: #F8FAFC !important;
   padding: 10px;
 }
 
-[data-theme='day'] select, [data-theme='day'] input, [data-theme='day'] textarea {
-  background: rgba(255, 255, 255, 0.75) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
+/* Liquid Flow Pill Navigation Highlight */
+.liquid-pill {
+  transition: all 0.35s var(--liquid-ease);
+  position: relative;
+  overflow: hidden;
 }
 
-[data-theme='day'] select option {
-  background-color: #FFFFFF !important;
-  color: #0F172A !important;
+.liquid-pill-active {
+  background: var(--amber-gradient) !important;
+  color: #07090C !important;
+  box-shadow: 0 4px 20px var(--amber-glow), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.38s var(--liquid-ease);
 }
 
-/* iOS Spring & Page Animations */
+/* Page Navigation Blur In & Blur Out Keyframes */
+@keyframes liquidPageBlurIn {
+  0% {
+    opacity: 0;
+    filter: blur(16px);
+    transform: scale(0.96) translateY(12px);
+  }
+  50% {
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes liquidPageBlurOut {
+  0% {
+    opacity: 0;
+    filter: blur(16px);
+    transform: scale(1.03) translateY(-12px);
+  }
+  50% {
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1) translateY(0);
+  }
+}
+
 @keyframes iosSpringUp {
-  0% { transform: translateY(100%); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% { transform: translateY(100%); opacity: 0; filter: blur(8px); }
+  100% { transform: translateY(0); opacity: 1; filter: blur(0); }
 }
 
 @keyframes iosFadeIn {
-  0% { opacity: 0; transform: scale(0.97) translateY(8px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-@keyframes iosPageSlideIn {
-  0% { opacity: 0; transform: translateX(24px) scale(0.98); }
-  100% { opacity: 1; transform: translateX(0) scale(1); }
-}
-
-@keyframes iosPageSlideBack {
-  0% { opacity: 0; transform: translateX(-24px) scale(0.98); }
-  100% { opacity: 1; transform: translateX(0) scale(1); }
+  0% { opacity: 0; filter: blur(10px); transform: scale(0.96) translateY(10px); }
+  100% { opacity: 1; filter: blur(0); transform: scale(1) translateY(0); }
 }
 
 @keyframes livePulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(242, 183, 5, 0.4); }
-  50% { box-shadow: 0 0 0 10px rgba(242, 183, 5, 0); }
+  50% { box-shadow: 0 0 0 12px rgba(242, 183, 5, 0); }
+}
+
+.animate-liquid-blur-in {
+  animation: liquidPageBlurIn 0.38s var(--liquid-ease) forwards;
+}
+
+.animate-liquid-blur-out {
+  animation: liquidPageBlurOut 0.38s var(--liquid-ease) forwards;
 }
 
 .animate-ios-sheet {
-  animation: iosSpringUp 0.42s var(--ios-spring) forwards;
+  animation: iosSpringUp 0.42s var(--liquid-ease) forwards;
 }
 
 .animate-ios-card {
-  animation: iosFadeIn 0.3s var(--ios-spring) forwards;
-}
-
-.animate-page-slide {
-  animation: iosPageSlideIn 0.32s var(--ios-spring) forwards;
-}
-
-.animate-page-back {
-  animation: iosPageSlideBack 0.32s var(--ios-spring) forwards;
+  animation: iosFadeIn 0.32s var(--liquid-ease) forwards;
 }
 
 .animate-live-pulse {
   animation: livePulse 2.2s infinite;
 }
 
-/* Tactile Active States */
+/* Tactile Active Press States */
 .ios-pressable {
-  transition: transform 0.18s var(--ios-spring), background-color 0.18s ease, border-color 0.18s ease;
+  transition: transform 0.22s var(--liquid-ease), background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
 }
 
 .ios-pressable:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 /* Hide Scrollbar */
