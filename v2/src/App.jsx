@@ -184,9 +184,9 @@ export default function App() {
             onClick={() => setShowHostModal(true)}
             className="ios-pressable"
             style={{
-              backgroundColor: 'var(--amber)',
-              color: '#0B0E11',
-              border: 'none',
+              backgroundColor: showHostModal ? 'var(--amber)' : 'var(--surface-raised)',
+              color: showHostModal ? '#0B0E11' : 'var(--text-primary)',
+              border: showHostModal ? '1px solid var(--amber)' : '1px solid var(--border-color)',
               borderRadius: 'var(--radius-full)',
               padding: '8px 16px',
               fontFamily: 'var(--font-heading)',
@@ -196,10 +196,10 @@ export default function App() {
               alignItems: 'center',
               gap: '6px',
               cursor: 'pointer',
-              boxShadow: '0 4px 15px var(--amber-glow)',
+              boxShadow: showHostModal ? '0 4px 15px var(--amber-glow)' : 'none',
             }}
           >
-            <PlusCircle size={16} /> Host
+            <PlusCircle size={16} color={showHostModal ? '#0B0E11' : 'var(--text-primary)'} /> Host
           </button>
 
           <button
