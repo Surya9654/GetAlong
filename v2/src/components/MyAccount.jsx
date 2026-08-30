@@ -2,10 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { User, Bike, ShieldAlert, Award, Plus, Trash2, CheckCircle2, Save, X, Settings, Shield } from 'lucide-react';
 import LiquidSegmentedControl from './LiquidSegmentedControl.jsx';
 
+const ACCOUNT_TAB_ORDER = ['profile', 'garage', 'safety'];
+
 export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
   const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'garage' | 'safety'
+  const [slideDirection, setSlideDirection] = useState('right');
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
+
+  const handleTabChange = (newTab) => {
+    const oldIdx = ACCOUNT_TAB_ORDER.indexOf(activeTab);
+    const newIdx = ACCOUNT_TAB_ORDER.indexOf(newTab);
+    if (newIdx >= oldIdx) {
+      setSlideDirection('right'); // Forward: slide in from right
+    } else {
+      setSlideDirection('left');  // Backward: slide in from left
+    }
+    setActiveTab(newTab);
+  };
 
   // Profile State
   const [profile, setProfile] = useState({
@@ -210,9 +224,16 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
             { value: 'safety', label: 'Safety SOS', icon: ShieldAlert },
           ]}
           value={activeTab}
-          onChange={(newTab) => setActiveTab(newTab)}
+          onChange={handleTabChange}
         />
       </div>
+
+      {/* Directional Horizontal Sliding Tab Content */}
+      <div
+        key={`${activeTab}-${slideDirection}`}
+        className={slideDirection === 'right' ? 'animate-slide-from-right' : 'animate-slide-from-left'}
+        style={{ overflow: 'hidden', padding: '4px 0' }}
+      >
 
       {/* Profile Tab */}
       {activeTab === 'profile' && (
@@ -656,6 +677,7 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
           </button>
         </form>
       )}
+      </div>
     </div>
   );
 }
