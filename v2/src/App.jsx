@@ -83,10 +83,13 @@ const FILTER_OPTIONS = [
   { label: 'Hardcore', value: 'hardcore' },
 ];
 
+const FILTER_ORDER = ['all', 'cruiser', 'spirited', 'hardcore'];
+
 export default function App() {
   const [theme, setTheme] = useState('night');
   const [currentTab, setCurrentTab] = useState('feed'); // 'feed' | 'account' | 'details'
   const [filter, setFilter] = useState('all'); // 'all' | 'cruiser' | 'spirited' | 'hardcore'
+  const [slideDirection, setSlideDirection] = useState('right');
   const [rides, setRides] = useState(INITIAL_RIDES);
   const [selectedRide, setSelectedRide] = useState(null);
   const [quickJoinRide, setQuickJoinRide] = useState(null);
@@ -103,6 +106,17 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  const handleFilterChange = (newFilter) => {
+    const oldIdx = FILTER_ORDER.indexOf(filter);
+    const newIdx = FILTER_ORDER.indexOf(newFilter);
+    if (newIdx >= oldIdx) {
+      setSlideDirection('right'); // Forward: slide tiles in from right
+    } else {
+      setSlideDirection('left');  // Backward: slide tiles in from left
+    }
+    setFilter(newFilter);
+  };
 
   // Find ride scheduled for today that user has joined
   const todayStr = new Date().toISOString().split('T')[0];
@@ -337,27 +351,38 @@ export default function App() {
               <LiquidSegmentedControl
                 options={FILTER_OPTIONS}
                 value={filter}
-                onChange={(newVal) => setFilter(newVal)}
+                onChange={handleFilterChange}
               />
             </div>
 
-            {/* Rides List */}
-            {filteredRides.map((ride) => {
-              const isJoined = ride.currentRiders.includes('me');
-              return (
-                <RideCard
-                  key={ride.id}
-                  ride={ride}
-                  host={INITIAL_RIDERS.find((r) => r.id === ride.hostId)}
-                  isJoined={isJoined}
-                  onSelect={(r) => {
-                    setSelectedRide(r);
-                    setCurrentTab('details');
-                  }}
-                  onQuickJoin={(r) => setQuickJoinRide(r)}
-                />
-              );
-            })}
+            {/* Directional Sliding Rides List Tiles */}
+            <div
+              key={`${filter}-${slideDirection}`}
+              className={slideDirection === 'right' ? 'animate-slide-from-right' : 'animate-slide-from-left'}
+            >
+              {filteredRides.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)' }}>
+                  No rides matching {filter} pace found.
+                </div>
+              ) : (
+                filteredRides.map((ride) => {
+                  const isJoined = ride.currentRiders.includes('me');
+                  return (
+                    <RideCard
+                      key={ride.id}
+                      ride={ride}
+                      host={INITIAL_RIDERS.find((r) => r.id === ride.hostId)}
+                      isJoined={isJoined}
+                      onSelect={(r) => {
+                        setSelectedRide(r);
+                        setCurrentTab('details');
+                      }}
+                      onQuickJoin={(r) => setQuickJoinRide(r)}
+                    />
+                  );
+                })
+              )}
+            </div>
           </div>
         )}
       </main>

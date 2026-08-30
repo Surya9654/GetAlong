@@ -129,6 +129,39 @@ select option {
   transition: all 0.38s var(--liquid-ease);
 }
 
+/* Directional Slide Animations (Left / Right relative to ride mode index) */
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(48px) scale(0.96);
+    filter: blur(10px);
+  }
+  60% {
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-48px) scale(0.96);
+    filter: blur(10px);
+  }
+  60% {
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
 /* Hero Expansion Animations (Card to Page & Host Button Origin) */
 @keyframes cardHeroExpand {
   0% {
@@ -194,6 +227,14 @@ select option {
 @keyframes livePulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(242, 183, 5, 0.4); }
   50% { box-shadow: 0 0 0 12px rgba(242, 183, 5, 0); }
+}
+
+.animate-slide-from-right {
+  animation: slideInFromRight 0.38s var(--liquid-ease) forwards;
+}
+
+.animate-slide-from-left {
+  animation: slideInFromLeft 0.38s var(--liquid-ease) forwards;
 }
 
 .animate-card-expand {
