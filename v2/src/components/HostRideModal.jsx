@@ -80,8 +80,9 @@ export default function HostRideModal({ onHostRide, onClose }) {
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        backdropFilter: 'blur(5px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.72)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         zIndex: 100,
         display: 'flex',
         alignItems: 'center',
@@ -91,18 +92,16 @@ export default function HostRideModal({ onHostRide, onClose }) {
       onClick={onClose}
     >
       <div
-        className="animate-fade-in"
+        className="glass-panel animate-ios-card"
         onClick={(e) => e.stopPropagation()}
         style={{
           width: '100%',
           maxWidth: '560px',
           maxHeight: '90vh',
           overflowY: 'auto',
-          backgroundColor: 'var(--surface-color)',
           borderRadius: 'var(--radius-lg)',
-          padding: '24px',
-          border: '1px solid var(--border-color)',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+          padding: '28px',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.7)',
         }}
       >
         {/* Header */}
