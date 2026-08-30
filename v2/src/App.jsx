@@ -261,7 +261,7 @@ export default function App() {
             />
           </div>
         ) : currentTab === 'details' && selectedRide ? (
-          <div key="details-tab" className="animate-liquid-blur-in">
+          <div key={`details-${selectedRide.id}`} className="animate-card-expand">
             {/* Back Navigation Button */}
             <button
               onClick={() => setCurrentTab('feed')}

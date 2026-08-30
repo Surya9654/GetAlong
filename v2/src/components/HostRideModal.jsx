@@ -115,7 +115,7 @@ export default function HostRideModal({ onHostRide, onClose }) {
       onClick={onClose}
     >
       <div
-        className="glass-panel animate-ios-card"
+        className="glass-panel animate-host-expand"
         onClick={(e) => e.stopPropagation()}
         style={{
           width: '100%',
@@ -125,6 +125,7 @@ export default function HostRideModal({ onHostRide, onClose }) {
           borderRadius: 'var(--radius-lg)',
           padding: '28px',
           boxShadow: '0 25px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.18)',
+          transformOrigin: 'top right',
         }}
       >
         {/* Header */}
