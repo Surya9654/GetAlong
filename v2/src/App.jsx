@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Compass, PlusCircle, User, ArrowLeft, Star, Send, Users, MapPin,
   Calendar, Clock, ChevronRight, X, Plus, Award, Settings, Sun, Moon,
-  ShieldCheck, Bike, Sparkles
+  ShieldCheck, Bike, Sparkles, SlidersHorizontal, Layers
 } from 'lucide-react';
 import MyAccount from './components/MyAccount.jsx';
 import RouteMap from './components/RouteMap.jsx';
@@ -87,6 +87,7 @@ export default function App() {
     name: 'Arjun Kumar',
     city: 'Chennai',
     experience: 'Intermediate',
+    badges: ['Early Bird', 'Coastal Regular', 'Marshal Certified'],
     primaryBike: { make: 'Royal Enfield', model: 'Himalayan 450', year: 2024 },
     sosContact: { name: 'Ramesh Kumar', phone: '+91 98765 43210', relation: 'Father' },
   });
@@ -145,16 +146,14 @@ export default function App() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-color)', color: 'var(--text-primary)', pb: '40px' }}>
-      {/* Top Navbar */}
+      {/* iOS Frosted Navigation Bar */}
       <header
+        className="glass-header"
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 50,
-          backgroundColor: 'rgba(26, 29, 34, 0.92)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid var(--border-color)',
-          padding: '12px 20px',
+          padding: '14px 20px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -162,76 +161,90 @@ export default function App() {
       >
         <div
           onClick={() => setCurrentTab('feed')}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+          className="ios-pressable"
+          style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
         >
-          <Compass size={28} color="var(--amber)" />
+          <div style={{ width: '38px', height: '38px', borderRadius: '12px', backgroundColor: 'var(--amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 15px var(--amber-glow)' }}>
+            <Compass size={22} color="#0B0E11" />
+          </div>
           <div>
-            <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 700, letterSpacing: '1px', color: 'var(--text-primary)' }}>
-              GET ALONG
-            </span>
-            <span style={{ marginLeft: '6px', fontSize: '0.68rem', backgroundColor: 'var(--amber)', color: '#121417', fontWeight: 800, padding: '1px 6px', borderRadius: '4px' }}>
-              v2.0
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.3px', color: 'var(--text-primary)' }}>
+                GET ALONG
+              </span>
+              <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--amber)', color: '#0B0E11', fontWeight: 800, padding: '2px 7px', borderRadius: 'var(--radius-full)' }}>
+                iOS v2
+              </span>
+            </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
             onClick={() => setShowHostModal(true)}
+            className="ios-pressable"
             style={{
               backgroundColor: 'var(--amber)',
-              color: '#121417',
+              color: '#0B0E11',
               border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              padding: '7px 14px',
+              borderRadius: 'var(--radius-full)',
+              padding: '8px 16px',
+              fontFamily: 'var(--font-heading)',
               fontWeight: 700,
-              fontSize: '0.88rem',
+              fontSize: '0.86rem',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
               cursor: 'pointer',
+              boxShadow: '0 4px 15px var(--amber-glow)',
             }}
           >
-            <PlusCircle size={17} /> Host Ride
+            <PlusCircle size={16} /> Host
           </button>
 
           <button
             onClick={() => setCurrentTab(currentTab === 'account' ? 'feed' : 'account')}
+            className="ios-pressable"
             style={{
               backgroundColor: currentTab === 'account' ? 'var(--amber)' : 'var(--surface-raised)',
-              color: currentTab === 'account' ? '#121417' : 'var(--text-primary)',
+              color: currentTab === 'account' ? '#0B0E11' : 'var(--text-primary)',
               border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '7px 12px',
+              borderRadius: 'var(--radius-full)',
+              padding: '8px 14px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
               fontWeight: 600,
-              fontSize: '0.88rem',
+              fontSize: '0.86rem',
             }}
           >
-            <User size={17} /> Profile
+            <User size={16} /> Profile
           </button>
 
           <button
             onClick={() => setTheme(theme === 'night' ? 'day' : 'night')}
+            className="ios-pressable"
             style={{
               backgroundColor: 'var(--surface-raised)',
               border: '1px solid var(--border-color)',
               color: 'var(--text-muted)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '7px',
+              borderRadius: '50%',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               cursor: 'pointer',
             }}
           >
-            {theme === 'night' ? <Sun size={18} color="var(--amber)" /> : <Moon size={18} />}
+            {theme === 'night' ? <Sun size={17} color="var(--amber)" /> : <Moon size={17} />}
           </button>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main style={{ maxWidth: '720px', margin: '0 auto', padding: '20px 16px' }}>
+      {/* Main Container */}
+      <main style={{ maxWidth: '680px', margin: '0 auto', padding: '24px 16px' }}>
         {currentTab === 'account' ? (
           <MyAccount
             userProfile={userProfile}
@@ -239,54 +252,57 @@ export default function App() {
           />
         ) : currentTab === 'details' && selectedRide ? (
           <div>
-            {/* Back Button */}
+            {/* Back Navigation Button */}
             <button
               onClick={() => setCurrentTab('feed')}
+              className="ios-pressable"
               style={{
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                backgroundColor: 'transparent',
-                border: 'none',
+                backgroundColor: 'var(--surface-raised)',
+                border: '1px solid var(--border-color)',
+                borderRadius: 'var(--radius-full)',
+                padding: '6px 14px',
                 color: 'var(--amber)',
                 fontWeight: 600,
-                fontSize: '0.95rem',
+                fontSize: '0.88rem',
                 cursor: 'pointer',
-                marginBottom: '16px',
+                marginBottom: '20px',
               }}
             >
-              <ArrowLeft size={18} /> Back to Group Rides Feed
+              <ArrowLeft size={16} /> Back to Feed
             </button>
 
             {/* Ride Details Header */}
-            <div style={{ backgroundColor: 'var(--surface-color)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', padding: '20px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--amber)', fontWeight: 700, textTransform: 'uppercase' }}>
+            <div className="glass-panel" style={{ borderRadius: 'var(--radius-md)', padding: '24px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--amber)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                   {selectedRide.difficulty} Pace
                 </span>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                  📅 {selectedRide.date} at {selectedRide.time}
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                  📅 {selectedRide.date} @ {selectedRide.time}
                 </span>
               </div>
-              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: '12px' }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '12px', letterSpacing: '-0.4px' }}>
                 {selectedRide.title}
               </h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '16px' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', lineHeight: '1.65', marginBottom: '18px' }}>
                 {selectedRide.description}
               </p>
 
-              {/* Waypoint Route Strip */}
-              <div style={{ backgroundColor: 'var(--surface-raised)', borderRadius: 'var(--radius-sm)', padding: '12px', fontSize: '0.9rem' }}>
-                <strong>Waypoints:</strong> {selectedRide.points.join(' ➔ ')} ({selectedRide.distanceKm} km total)
+              {/* Waypoints Strip */}
+              <div style={{ backgroundColor: 'var(--surface-raised)', borderRadius: 'var(--radius-sm)', padding: '12px 16px', fontSize: '0.88rem', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <strong style={{ color: 'var(--amber)' }}>Waypoints:</strong> {selectedRide.points.join(' ➔ ')} ({selectedRide.distanceKm} km)
               </div>
             </div>
 
-            {/* Interactive Route Map Component */}
+            {/* Route Map */}
             <div style={{ marginBottom: '20px' }}>
               <RouteMap waypoints={selectedRide.points} />
             </div>
 
-            {/* Hands-Free Group Chat */}
+            {/* iOS Ride Chat */}
             <RideChat
               chatMessages={selectedRide.chat}
               onSendMessage={handleSendMessage}
@@ -295,7 +311,7 @@ export default function App() {
           </div>
         ) : (
           <div>
-            {/* Hero Ride Day Banner if user has a ride today */}
+            {/* Live Ride-Day Banner */}
             {todayRide && (
               <RideDayBanner
                 ride={todayRide}
@@ -306,28 +322,45 @@ export default function App() {
               />
             )}
 
-            {/* Feed Filter Pills */}
-            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', pb: '10px', marginBottom: '20px' }}>
-              {['all', 'cruiser', 'spirited', 'hardcore'].map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  style={{
-                    backgroundColor: filter === f ? 'var(--amber)' : 'var(--surface-color)',
-                    color: filter === f ? '#121417' : 'var(--text-primary)',
-                    border: `1px solid ${filter === f ? 'var(--amber)' : 'var(--border-color)'}`,
-                    borderRadius: 'var(--radius-full)',
-                    padding: '6px 16px',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    textTransform: 'capitalize',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  {f === 'all' ? 'All Rides' : `${f} Pace`}
-                </button>
-              ))}
+            {/* iOS Segmented Control Pills Bar */}
+            <div
+              style={{
+                backgroundColor: 'var(--surface-raised)',
+                border: '1px solid var(--border-color)',
+                borderRadius: 'var(--radius-full)',
+                padding: '4px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '4px',
+                marginBottom: '24px',
+              }}
+            >
+              {['all', 'cruiser', 'spirited', 'hardcore'].map((f) => {
+                const isActive = filter === f;
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className="ios-pressable"
+                    style={{
+                      backgroundColor: isActive ? 'var(--amber)' : 'transparent',
+                      color: isActive ? '#0B0E11' : 'var(--text-muted)',
+                      border: 'none',
+                      borderRadius: 'var(--radius-full)',
+                      padding: '8px 0',
+                      fontSize: '0.82rem',
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: isActive ? 800 : 600,
+                      cursor: 'pointer',
+                      textTransform: 'capitalize',
+                      textAlign: 'center',
+                      boxShadow: isActive ? '0 3px 12px var(--amber-glow)' : 'none',
+                    }}
+                  >
+                    {f === 'all' ? 'All Rides' : f}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Rides List */}
@@ -362,7 +395,7 @@ export default function App() {
         />
       )}
 
-      {/* 30-Second Host Ride Modal */}
+      {/* Host Ride Modal */}
       {showHostModal && (
         <HostRideModal
           onHostRide={handleHostRideCreate}
