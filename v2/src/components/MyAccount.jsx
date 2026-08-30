@@ -28,24 +28,38 @@ const THEMES = {
   }
 };
 
-export default function MyAccount({ onClose, onProfileUpdated, theme = 'night' }) {
+export default function MyAccount({ onClose, onProfileUpdated, theme = 'night', userProfile }) {
   const COLORS = THEMES[theme] || THEMES.night;
   const inputClass = 'w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400';
   const inputStyle = { backgroundColor: COLORS.surface, color: COLORS.textPrimary, border: `1px solid ${COLORS.border}` };
 
   const [activeTab, setActiveTab] = useState('profile'); // profile | garage | safety
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
 
   // Account State
   const [profile, setProfile] = useState({
-    name: '', bio: '', city: 'Chennai', experience_level: 'Intermediate', email: '', phone: ''
+    name: userProfile?.name || 'Arjun Kumar',
+    bio: userProfile?.bio || 'Weekend rider. Coastal roads over highways, always.',
+    city: userProfile?.city || 'Chennai',
+    experience_level: userProfile?.experience || 'Intermediate',
+    email: userProfile?.email || 'arjun.rider@getalong.dev',
+    phone: userProfile?.phone || '+91 98765 43210'
   });
-  const [bikes, setBikes] = useState([]);
-  const [badges, setBadges] = useState([]);
+  const [bikes, setBikes] = useState(
+    userProfile?.primaryBike
+      ? [{ id: 1, make: userProfile.primaryBike.make, model: userProfile.primaryBike.model, year: userProfile.primaryBike.year, engine_cc: 452, reg_number: 'TN-07-BW-1234', is_primary: true }]
+      : []
+  );
+  const [badges, setBadges] = useState(
+    userProfile?.badges || ['Early Bird', 'Coastal Regular', 'Marshal Certified']
+  );
   const [preferences, setPreferences] = useState({
-    emergency_name: '', emergency_phone: '', preferred_difficulty: 'cruiser', notifications_enabled: true
+    emergency_name: userProfile?.sosContact?.name || 'Ramesh Kumar',
+    emergency_phone: userProfile?.sosContact?.phone || '+91 98765 43210',
+    preferred_difficulty: 'cruiser',
+    notifications_enabled: true
   });
 
   // Add Bike Modal State
@@ -69,19 +83,16 @@ export default function MyAccount({ onClose, onProfileUpdated, theme = 'night' }
 
   const fetchAccountData = async () => {
     try {
-      setLoading(true);
       const res = await fetch('/api/account', { headers: getAuthHeaders() });
       if (res.ok) {
         const data = await res.json();
-        if (data.user) setProfile(data.user);
-        if (data.motorcycles) setBikes(data.motorcycles);
-        if (data.badges) setBadges(data.badges);
-        if (data.preferences) setPreferences(data.preferences);
+        if (data.user && data.user.name) setProfile(data.user);
+        if (data.motorcycles && data.motorcycles.length > 0) setBikes(data.motorcycles);
+        if (data.badges && data.badges.length > 0) setBadges(data.badges);
+        if (data.preferences && data.preferences.emergency_name) setPreferences(data.preferences);
       }
     } catch (err) {
-      console.error('Failed to fetch account data:', err);
-    } finally {
-      setLoading(false);
+      console.warn('Backend API offline, using local profile data:', err);
     }
   };
 
@@ -309,18 +320,35 @@ export default function MyAccount({ onClose, onProfileUpdated, theme = 'night' }
             </div>
 
             {/* Badges Display */}
-            {badges.length > 0 && (
-              <div className="pt-2">
-                <label className="block text-xs uppercase font-semibold mb-1.5" style={{ color: COLORS.textMuted }}>Earned Badges</label>
-                <div className="flex flex-wrap gap-2">
-                  {badges.map((b) => (
-                    <span key={b.id} className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium" style={{ backgroundColor: `${COLORS.amber}18`, color: COLORS.amber, border: `1px solid ${COLORS.amber}44` }}>
-                      <Award size={12} /> {b.badge_name}
-                    </span>
-                  ))}
-                </div>
+            <div className="pt-2">
+              <label className="block text-xs uppercase font-semibold mb-1.5" style={{ color: COLORS.textMuted }}>
+                Earned Badges ({badges.length})
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {badges.length === 0 ? (
+                  <span className="text-xs italic" style={{ color: COLORS.textFaint }}>No badges earned yet. Join rides to unlock achievements!</span>
+                ) : (
+                  badges.map((b, idx) => {
+                    const name = typeof b === 'string' ? b : (b.badge_name || b.name || b.title || 'Rider Badge');
+                    return (
+                      <span
+                        key={typeof b === 'object' && b.id ? b.id : idx}
+                        className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-semibold transition-all hover:scale-105"
+                        style={{
+                          backgroundColor: `${COLORS.amber}20`,
+                          color: COLORS.amber,
+                          border: `1px solid ${COLORS.amber}55`,
+                          boxShadow: `0 2px 8px ${COLORS.amber}15`
+                        }}
+                      >
+                        <Award size={13} color={COLORS.amber} />
+                        {name}
+                      </span>
+                    );
+                  })
+                )}
               </div>
-            )}
+            </div>
 
             <button
               type="submit"

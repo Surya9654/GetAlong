@@ -309,18 +309,35 @@ export default function MyAccount({ onClose, onProfileUpdated, theme = 'night' }
             </div>
 
             {/* Badges Display */}
-            {badges.length > 0 && (
-              <div className="pt-2">
-                <label className="block text-xs uppercase font-semibold mb-1.5" style={{ color: COLORS.textMuted }}>Earned Badges</label>
-                <div className="flex flex-wrap gap-2">
-                  {badges.map((b) => (
-                    <span key={b.id} className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium" style={{ backgroundColor: `${COLORS.amber}18`, color: COLORS.amber, border: `1px solid ${COLORS.amber}44` }}>
-                      <Award size={12} /> {b.badge_name}
-                    </span>
-                  ))}
-                </div>
+            <div className="pt-2">
+              <label className="block text-xs uppercase font-semibold mb-1.5" style={{ color: COLORS.textMuted }}>
+                Earned Badges ({badges.length})
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {badges.length === 0 ? (
+                  <span className="text-xs italic" style={{ color: COLORS.textFaint }}>No badges earned yet. Join rides to unlock achievements!</span>
+                ) : (
+                  badges.map((b, idx) => {
+                    const name = typeof b === 'string' ? b : (b.badge_name || b.name || b.title || 'Rider Badge');
+                    return (
+                      <span
+                        key={typeof b === 'object' && b.id ? b.id : idx}
+                        className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-semibold transition-all hover:scale-105"
+                        style={{
+                          backgroundColor: `${COLORS.amber}20`,
+                          color: COLORS.amber,
+                          border: `1px solid ${COLORS.amber}55`,
+                          boxShadow: `0 2px 8px ${COLORS.amber}15`
+                        }}
+                      >
+                        <Award size={13} color={COLORS.amber} />
+                        {name}
+                      </span>
+                    );
+                  })
+                )}
               </div>
-            )}
+            </div>
 
             <button
               type="submit"
