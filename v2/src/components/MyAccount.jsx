@@ -568,129 +568,6 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
               </div>
             ))}
           </div>
-
-          {/* Add Bike Form Modal Popup */}
-          {showAddBike && (
-            <div
-              style={{
-                position: 'fixed',
-                inset: 0,
-                backgroundColor: 'rgba(5, 7, 10, 0.78)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                zIndex: 100,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '16px',
-              }}
-              onClick={() => setShowAddBike(false)}
-            >
-              <div
-                className="glass-panel animate-ios-card"
-                onClick={(e) => e.stopPropagation()}
-                style={{ width: '100%', maxWidth: '460px', borderRadius: 'var(--radius-lg)', padding: '24px' }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                    Add Motorcycle to Garage
-                  </h4>
-                  <button onClick={() => setShowAddBike(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <form onSubmit={handleAddBike} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                    <div>
-                      <label style={labelStyle}>Make</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Royal Enfield"
-                        required
-                        value={bikeForm.make}
-                        onChange={(e) => setBikeForm({ ...bikeForm, make: e.target.value })}
-                        style={inputStyle}
-                      />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>Model</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Himalayan 450"
-                        required
-                        value={bikeForm.model}
-                        onChange={(e) => setBikeForm({ ...bikeForm, model: e.target.value })}
-                        style={inputStyle}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                    <div>
-                      <label style={labelStyle}>Year</label>
-                      <input
-                        type="number"
-                        value={bikeForm.year}
-                        onChange={(e) => setBikeForm({ ...bikeForm, year: Number(e.target.value) })}
-                        style={inputStyle}
-                      />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>Engine (CC)</label>
-                      <input
-                        type="number"
-                        placeholder="452"
-                        value={bikeForm.engine_cc}
-                        onChange={(e) => setBikeForm({ ...bikeForm, engine_cc: e.target.value })}
-                        style={inputStyle}
-                      />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>Reg No.</label>
-                      <input
-                        type="text"
-                        placeholder="TN-07-XX-1234"
-                        value={bikeForm.reg_number}
-                        onChange={(e) => setBikeForm({ ...bikeForm, reg_number: e.target.value })}
-                        style={inputStyle}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', pt: '4px' }}>
-                    <input
-                      type="checkbox"
-                      id="is_primary_checkbox"
-                      checked={bikeForm.is_primary}
-                      onChange={(e) => setBikeForm({ ...bikeForm, is_primary: e.target.checked })}
-                    />
-                    <label htmlFor="is_primary_checkbox" style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>Set as primary motorcycle</label>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="ios-pressable"
-                    style={{
-                      marginTop: '8px',
-                      width: '100%',
-                      backgroundColor: 'var(--amber)',
-                      color: '#0B0E11',
-                      border: 'none',
-                      borderRadius: 'var(--radius-full)',
-                      padding: '13px',
-                      fontFamily: 'var(--font-heading)',
-                      fontSize: '1rem',
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Save to Garage
-                  </button>
-                </form>
-              </div>
-            </div>
-          )}
         </div>
       )}
 
@@ -796,6 +673,132 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
               <Shield size={18} /> {saving ? 'Saving...' : 'Save Emergency SOS Info'}
             </button>
           </form>
+        </div>
+      )}
+
+      {/* Add Bike Form Modal Popup (Fixed Top-Middle Overlay) */}
+      {showAddBike && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(5, 7, 10, 0.85)',
+            backdropFilter: 'blur(28px) saturate(200%)',
+            WebkitBackdropFilter: 'blur(28px) saturate(200%)',
+            zIndex: 999999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+          }}
+          onClick={() => setShowAddBike(false)}
+        >
+          <div
+            className="glass-panel animate-ios-card"
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: '100%', maxWidth: '480px', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: '0 25px 60px rgba(0,0,0,0.9)' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                Add Motorcycle to Garage
+              </h4>
+              <button onClick={() => setShowAddBike(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddBike} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={labelStyle}>Make</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Royal Enfield"
+                    required
+                    value={bikeForm.make}
+                    onChange={(e) => setBikeForm({ ...bikeForm, make: e.target.value })}
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Model</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Himalayan 450"
+                    required
+                    value={bikeForm.model}
+                    onChange={(e) => setBikeForm({ ...bikeForm, model: e.target.value })}
+                    style={inputStyle}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={labelStyle}>Year</label>
+                  <input
+                    type="number"
+                    value={bikeForm.year}
+                    onChange={(e) => setBikeForm({ ...bikeForm, year: Number(e.target.value) })}
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Engine (CC)</label>
+                  <input
+                    type="number"
+                    placeholder="452"
+                    value={bikeForm.engine_cc}
+                    onChange={(e) => setBikeForm({ ...bikeForm, engine_cc: e.target.value })}
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Reg No.</label>
+                  <input
+                    type="text"
+                    placeholder="TN-07-XX-1234"
+                    value={bikeForm.reg_number}
+                    onChange={(e) => setBikeForm({ ...bikeForm, reg_number: e.target.value })}
+                    style={inputStyle}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', pt: '4px' }}>
+                <input
+                  type="checkbox"
+                  id="is_primary_checkbox"
+                  checked={bikeForm.is_primary}
+                  onChange={(e) => setBikeForm({ ...bikeForm, is_primary: e.target.checked })}
+                />
+                <label htmlFor="is_primary_checkbox" style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>Set as primary motorcycle</label>
+              </div>
+
+              <button
+                type="submit"
+                className="ios-pressable"
+                style={{
+                  marginTop: '8px',
+                  width: '100%',
+                  backgroundColor: 'var(--amber)',
+                  color: '#0B0E11',
+                  border: 'none',
+                  borderRadius: 'var(--radius-full)',
+                  padding: '13px',
+                  fontFamily: 'var(--font-heading)',
+                  fontSize: '1rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+              >
+                Save to Garage
+              </button>
+            </form>
+          </div>
         </div>
       )}
     </div>
