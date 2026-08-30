@@ -158,7 +158,18 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
     }
   };
 
-  const handleAddBike = (e) => {
+  const handleModalBikePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBikeForm((prev) => ({ ...prev, photo_url: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAddBike = async (e) => {
     e.preventDefault();
     if (!bikeForm.make || !bikeForm.model) return;
     const newBikeObj = {
@@ -171,14 +182,26 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
       is_primary: bikeForm.is_primary || bikes.length === 0,
       photo_url: bikeForm.photo_url || '',
     };
-    if (newBikeObj.is_primary) {
-      setBikes((prev) => prev.map((b) => ({ ...b, is_primary: false })).concat(newBikeObj));
-    } else {
-      setBikes((prev) => [...prev, newBikeObj]);
+
+    try {
+      await fetch('/api/account/motorcycles', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(newBikeObj)
+      });
+    } catch (err) {
+      console.warn('Backend API offline, saved locally:', err);
     }
+
+    if (newBikeObj.is_primary) {
+      setBikes((prev) => [newBikeObj, ...prev.map((b) => ({ ...b, is_primary: false }))]);
+    } else {
+      setBikes((prev) => [newBikeObj, ...prev]);
+    }
+
     setShowAddBike(false);
     setBikeForm({ make: '', model: '', year: new Date().getFullYear(), engine_cc: '', reg_number: '', is_primary: false, photo_url: '' });
-    setStatusMsg('New motorcycle added to garage!');
+    setStatusMsg(`New motorcycle (${newBikeObj.make} ${newBikeObj.model}) added to garage!`);
     setTimeout(() => setStatusMsg(''), 3000);
   };
 
@@ -711,6 +734,26 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
             </div>
 
             <form onSubmit={handleAddBike} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* Bike Photo Uploader inside Modal */}
+              <div style={{ backgroundColor: 'var(--surface-raised)', borderRadius: 'var(--radius-sm)', padding: '12px', border: '1px dashed var(--border-color)', textAlign: 'center' }}>
+                {bikeForm.photo_url ? (
+                  <div style={{ width: '100%', height: '120px', borderRadius: 'var(--radius-xs)', overflow: 'hidden', position: 'relative' }}>
+                    <img src={bikeForm.photo_url} alt="Bike Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <label style={{ position: 'absolute', bottom: '6px', right: '6px', backgroundColor: 'rgba(0,0,0,0.7)', color: '#FFF', padding: '3px 8px', borderRadius: 'var(--radius-full)', fontSize: '0.7rem', cursor: 'pointer' }}>
+                      Change Photo
+                      <input type="file" accept="image/*" onChange={handleModalBikePhotoUpload} style={{ display: 'none' }} />
+                    </label>
+                  </div>
+                ) : (
+                  <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', padding: '8px 0' }}>
+                    <Camera size={22} color="var(--amber)" />
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--amber)' }}>📸 Click to Upload Motorcycle Photo</span>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Supports JPG, PNG, WEBP</span>
+                    <input type="file" accept="image/*" onChange={handleModalBikePhotoUpload} style={{ display: 'none' }} />
+                  </label>
+                )}
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
                   <label style={labelStyle}>Make</label>
