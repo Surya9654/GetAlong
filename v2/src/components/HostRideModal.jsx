@@ -75,14 +75,37 @@ export default function HostRideModal({ onHostRide, onClose }) {
     });
   };
 
+  const inputStyle = {
+    width: '100%',
+    backgroundColor: 'rgba(18, 22, 29, 0.62)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    border: '1px solid var(--border-color)',
+    borderRadius: 'var(--radius-sm)',
+    padding: '11px 14px',
+    color: 'var(--text-primary)',
+    fontSize: '0.92rem',
+    fontFamily: 'var(--font-body)',
+  };
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: '0.78rem',
+    fontWeight: 700,
+    color: 'var(--text-muted)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '5px',
+  };
+
   return (
     <div
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.72)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
+        backgroundColor: 'rgba(5, 7, 10, 0.78)',
+        backdropFilter: 'blur(28px) saturate(200%)',
+        WebkitBackdropFilter: 'blur(28px) saturate(200%)',
         zIndex: 100,
         display: 'flex',
         alignItems: 'center',
@@ -101,28 +124,43 @@ export default function HostRideModal({ onHostRide, onClose }) {
           overflowY: 'auto',
           borderRadius: 'var(--radius-lg)',
           padding: '28px',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.7)',
+          boxShadow: '0 25px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.18)',
         }}
       >
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
           <div>
-            <span style={{ color: 'var(--amber)', fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>
-              30-Second Host Wizard
+            <span style={{ color: 'var(--amber)', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+              30-Second Ride Creator
             </span>
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', color: 'var(--text-primary)' }}>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '2px' }}>
               Host a Group Ride
             </h2>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-            <X size={22} />
+          <button
+            onClick={onClose}
+            className="ios-pressable"
+            style={{
+              backgroundColor: 'var(--surface-raised)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-muted)',
+              borderRadius: '50%',
+              width: '34px',
+              height: '34px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <X size={18} />
           </button>
         </div>
 
-        {/* Presets Chips */}
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--amber)', marginBottom: '8px' }}>
-            <Sparkles size={14} /> Quick Start Presets
+        {/* Quick Start Presets */}
+        <div style={{ marginBottom: '22px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', fontWeight: 800, color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>
+            <Sparkles size={14} color="var(--amber)" /> 1-Tap Preset Templates
           </label>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
             {RIDE_PRESETS.map((p) => {
@@ -132,16 +170,19 @@ export default function HostRideModal({ onHostRide, onClose }) {
                   key={p.id}
                   type="button"
                   onClick={() => applyPreset(p)}
+                  className="ios-pressable"
                   style={{
-                    backgroundColor: isSelected ? 'var(--amber)' : 'var(--surface-raised)',
-                    color: isSelected ? '#121417' : 'var(--text-primary)',
+                    backgroundColor: isSelected ? 'var(--amber)' : 'rgba(28, 34, 46, 0.65)',
+                    color: isSelected ? '#0B0E11' : 'var(--text-primary)',
                     border: `1px solid ${isSelected ? 'var(--amber)' : 'var(--border-color)'}`,
                     borderRadius: 'var(--radius-sm)',
-                    padding: '8px',
+                    padding: '10px 6px',
                     fontSize: '0.8rem',
-                    fontWeight: 600,
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: isSelected ? 800 : 600,
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease',
+                    boxShadow: isSelected ? '0 4px 15px var(--amber-glow)' : 'none',
+                    textAlign: 'center',
                   }}
                 >
                   {p.name}
@@ -152,68 +193,38 @@ export default function HostRideModal({ onHostRide, onClose }) {
         </div>
 
         {/* Form Fields */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
-              Ride Title
-            </label>
+            <label style={labelStyle}>Ride Title</label>
             <input
               type="text"
               required
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              style={{
-                width: '100%',
-                backgroundColor: 'var(--bg-color)',
-                border: '1px solid var(--border-color)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '10px 12px',
-                color: 'var(--text-primary)',
-                fontSize: '0.92rem',
-              }}
+              style={inputStyle}
             />
           </div>
 
           {/* Date & Time Row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
-                Scheduled Date
-              </label>
+              <label style={labelStyle}>Scheduled Date</label>
               <input
                 type="date"
                 required
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                style={{
-                  width: '100%',
-                  backgroundColor: 'var(--bg-color)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '10px 12px',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.92rem',
-                }}
+                style={inputStyle}
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
-                Rollout Time
-              </label>
+              <label style={labelStyle}>Rollout Time</label>
               <input
                 type="text"
                 required
                 value={formData.time}
                 onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                style={{
-                  width: '100%',
-                  backgroundColor: 'var(--bg-color)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '10px 12px',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.92rem',
-                }}
+                style={inputStyle}
               />
             </div>
           </div>
@@ -221,109 +232,71 @@ export default function HostRideModal({ onHostRide, onClose }) {
           {/* Distance & Difficulty Row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
-                Distance (KM)
-              </label>
+              <label style={labelStyle}>Distance (KM)</label>
               <input
                 type="number"
                 required
                 value={formData.distanceKm}
                 onChange={(e) => setFormData({ ...formData, distanceKm: e.target.value })}
-                style={{
-                  width: '100%',
-                  backgroundColor: 'var(--bg-color)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '10px 12px',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.92rem',
-                }}
+                style={inputStyle}
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
-                Pace / Difficulty
-              </label>
+              <label style={labelStyle}>Pace / Difficulty Dropdown</label>
               <select
                 value={formData.difficulty}
                 onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                style={{
-                  width: '100%',
-                  backgroundColor: 'var(--bg-color)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '10px 12px',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.92rem',
-                }}
+                style={inputStyle}
               >
-                <option value="cruiser">Cruiser (Relaxed)</option>
-                <option value="spirited">Spirited (Brisk)</option>
-                <option value="hardcore">Hardcore (Expert)</option>
+                <option value="cruiser">Cruiser (Relaxed Pace)</option>
+                <option value="spirited">Spirited (Brisk Pace)</option>
+                <option value="hardcore">Hardcore (Expert Pace)</option>
               </select>
             </div>
           </div>
 
           {/* Waypoints */}
           <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
-              Waypoints (Comma separated)
-            </label>
+            <label style={labelStyle}>Route Waypoints (Comma separated)</label>
             <input
               type="text"
               required
               value={formData.pointsStr}
               onChange={(e) => setFormData({ ...formData, pointsStr: e.target.value })}
               placeholder="e.g. Start Point, Breakfast Stop, Final Stop"
-              style={{
-                width: '100%',
-                backgroundColor: 'var(--bg-color)',
-                border: '1px solid var(--border-color)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '10px 12px',
-                color: 'var(--text-primary)',
-                fontSize: '0.92rem',
-              }}
+              style={inputStyle}
             />
           </div>
 
           {/* Description */}
           <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
-              Ride Notes & Briefing
-            </label>
+            <label style={labelStyle}>Pace Guidelines & Notes</label>
             <textarea
               rows={3}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              style={{
-                width: '100%',
-                backgroundColor: 'var(--bg-color)',
-                border: '1px solid var(--border-color)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '10px 12px',
-                color: 'var(--text-primary)',
-                fontSize: '0.92rem',
-                resize: 'none',
-              }}
+              style={{ ...inputStyle, resize: 'none' }}
             />
           </div>
 
           {/* Submit */}
           <button
             type="submit"
+            className="ios-pressable"
             style={{
-              marginTop: '6px',
+              marginTop: '8px',
               width: '100%',
               backgroundColor: 'var(--amber)',
-              color: '#121417',
+              color: '#0B0E11',
               border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              padding: '12px',
+              borderRadius: 'var(--radius-full)',
+              padding: '14px',
               fontFamily: 'var(--font-heading)',
               fontSize: '1.1rem',
-              fontWeight: 700,
+              fontWeight: 800,
               cursor: 'pointer',
+              boxShadow: '0 8px 25px var(--amber-glow)',
+              letterSpacing: '0.5px',
             }}
           >
             CREATE & PUBLISH RIDE
