@@ -355,10 +355,11 @@ export default function App() {
               />
             </div>
 
-            {/* Directional Sliding Rides List Tiles */}
+            {/* Directional Horizontal Sliding Rides List Tiles */}
             <div
               key={`${filter}-${slideDirection}`}
               className={slideDirection === 'right' ? 'animate-slide-from-right' : 'animate-slide-from-left'}
+              style={{ overflow: 'hidden', padding: '4px 0' }}
             >
               {filteredRides.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)' }}>

@@ -18,7 +18,7 @@ export default function RideCard({ ride, host, isJoined, onSelect, onQuickJoin }
   return (
     <div
       onClick={() => onSelect(ride)}
-      className="glass-panel ios-pressable animate-ios-card"
+      className="glass-panel ios-pressable"
       style={{
         borderRadius: 'var(--radius-md)',
         padding: '20px',
