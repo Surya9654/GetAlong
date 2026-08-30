@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, Bike, ShieldAlert, Award, Plus, Trash2, CheckCircle2, Save, X, Settings, Shield } from 'lucide-react';
+import LiquidSegmentedControl from './LiquidSegmentedControl.jsx';
 
 export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
   const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'garage' | 'safety'
@@ -200,51 +201,17 @@ export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
         </div>
       )}
 
-      {/* iOS Liquid Segmented Tab Bar Header */}
-      <div
-        className="glass-panel"
-        style={{
-          borderRadius: 'var(--radius-full)',
-          padding: '4px',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '4px',
-          marginBottom: '24px',
-        }}
-      >
-        {[
-          { id: 'profile', label: 'Profile', icon: User },
-          { id: 'garage', label: `Garage (${bikes.length})`, icon: Bike },
-          { id: 'safety', label: 'Safety SOS', icon: ShieldAlert },
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`ios-pressable liquid-pill ${isActive ? 'liquid-pill-active' : ''}`}
-              style={{
-                backgroundColor: isActive ? 'transparent' : 'transparent',
-                color: isActive ? '#07090C' : 'var(--text-muted)',
-                border: 'none',
-                borderRadius: 'var(--radius-full)',
-                padding: '9px 0',
-                fontSize: '0.82rem',
-                fontFamily: 'var(--font-heading)',
-                fontWeight: isActive ? 800 : 600,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-              }}
-            >
-              <Icon size={14} color={isActive ? '#07090C' : 'var(--text-muted)'} />
-              {tab.label}
-            </button>
-          );
-        })}
+      {/* Elastic Liquid Sliding Tab Control */}
+      <div style={{ marginBottom: '24px' }}>
+        <LiquidSegmentedControl
+          options={[
+            { value: 'profile', label: 'Profile', icon: User },
+            { value: 'garage', label: `Garage (${bikes.length})`, icon: Bike },
+            { value: 'safety', label: 'Safety SOS', icon: ShieldAlert },
+          ]}
+          value={activeTab}
+          onChange={(newTab) => setActiveTab(newTab)}
+        />
       </div>
 
       {/* Profile Tab */}

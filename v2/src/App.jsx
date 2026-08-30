@@ -12,6 +12,7 @@ import QuickJoinSheet from './components/QuickJoinSheet.jsx';
 import HostRideModal from './components/HostRideModal.jsx';
 import RideChat from './components/RideChat.jsx';
 import RideDayBanner from './components/RideDayBanner.jsx';
+import LiquidSegmentedControl from './components/LiquidSegmentedControl.jsx';
 
 const INITIAL_RIDERS = [
   { id: 'me', name: 'You (Arjun)', avatar: 'A', color: '#F2B705', bio: 'Weekend rider. Coastal roads over highways.', badges: ['Early Bird'] },
@@ -26,7 +27,7 @@ const INITIAL_RIDES = [
     id: 'ride1',
     title: 'ECR Sunrise & Filter Coffee',
     hostId: 'r2',
-    date: new Date().toISOString().split('T')[0], // Today's date for RideDayBanner demo
+    date: new Date().toISOString().split('T')[0],
     time: '5:30 AM',
     points: ['Chennai (ECR Toll)', 'Mahabalipuram Beach Shack', 'Pondicherry Promenade'],
     distanceKm: 160,
@@ -73,6 +74,13 @@ const INITIAL_RIDES = [
     chat: [],
     reviews: [],
   },
+];
+
+const FILTER_OPTIONS = [
+  { label: 'All Rides', value: 'all' },
+  { label: 'Cruiser', value: 'cruiser' },
+  { label: 'Spirited', value: 'spirited' },
+  { label: 'Hardcore', value: 'hardcore' },
 ];
 
 export default function App() {
@@ -324,43 +332,13 @@ export default function App() {
               />
             )}
 
-            {/* Liquid Flow Segmented Filter Pills Bar */}
-            <div
-              className="glass-panel"
-              style={{
-                borderRadius: 'var(--radius-full)',
-                padding: '4px',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(4, 1fr)',
-                gap: '4px',
-                marginBottom: '24px',
-              }}
-            >
-              {['all', 'cruiser', 'spirited', 'hardcore'].map((f) => {
-                const isActive = filter === f;
-                return (
-                  <button
-                    key={f}
-                    onClick={() => setFilter(f)}
-                    className={`ios-pressable liquid-pill ${isActive ? 'liquid-pill-active' : ''}`}
-                    style={{
-                      backgroundColor: isActive ? 'transparent' : 'transparent',
-                      color: isActive ? '#07090C' : 'var(--text-muted)',
-                      border: 'none',
-                      borderRadius: 'var(--radius-full)',
-                      padding: '9px 0',
-                      fontSize: '0.82rem',
-                      fontFamily: 'var(--font-heading)',
-                      fontWeight: isActive ? 800 : 600,
-                      cursor: 'pointer',
-                      textTransform: 'capitalize',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {f === 'all' ? 'All Rides' : f}
-                  </button>
-                );
-              })}
+            {/* Elastic Liquid Sliding Segmented Control Bar */}
+            <div style={{ marginBottom: '24px' }}>
+              <LiquidSegmentedControl
+                options={FILTER_OPTIONS}
+                value={filter}
+                onChange={(newVal) => setFilter(newVal)}
+              />
             </div>
 
             {/* Rides List */}
