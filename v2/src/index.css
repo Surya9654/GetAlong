@@ -80,7 +80,7 @@ body {
   background-color: rgba(243, 244, 246, 0.85);
 }
 
-/* iOS Spring & Slide Animations */
+/* iOS Spring & Page Transitions */
 @keyframes iosSpringUp {
   0% { transform: translateY(100%); opacity: 0; }
   100% { transform: translateY(0); opacity: 1; }
@@ -89,6 +89,16 @@ body {
 @keyframes iosFadeIn {
   0% { opacity: 0; transform: scale(0.97) translateY(8px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes iosPageSlideIn {
+  0% { opacity: 0; transform: translateX(24px) scale(0.98); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes iosPageSlideBack {
+  0% { opacity: 0; transform: translateX(-24px) scale(0.98); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
 }
 
 @keyframes livePulse {
@@ -102,6 +112,14 @@ body {
 
 .animate-ios-card {
   animation: iosFadeIn 0.3s var(--ios-spring) forwards;
+}
+
+.animate-page-slide {
+  animation: iosPageSlideIn 0.32s var(--ios-spring) forwards;
+}
+
+.animate-page-back {
+  animation: iosPageSlideBack 0.32s var(--ios-spring) forwards;
 }
 
 .animate-live-pulse {

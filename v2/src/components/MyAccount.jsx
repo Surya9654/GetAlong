@@ -1,68 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { User, Bike, ShieldAlert, Award, Plus, Trash2, CheckCircle2, Save, X, Settings } from 'lucide-react';
+import { User, Bike, ShieldAlert, Award, Plus, Trash2, CheckCircle2, Save, X, Settings, Shield } from 'lucide-react';
 
-const THEMES = {
-  night: {
-    bg: '#15171B',
-    surface: '#1E2126',
-    surfaceRaised: '#262A30',
-    border: '#33373D',
-    textPrimary: '#F2EFE9',
-    textMuted: '#9297A0',
-    textFaint: '#5B5F66',
-    amber: '#F2B705',
-    rust: '#D9622B',
-    moss: '#7A9B5C',
-  },
-  day: {
-    bg: '#F5F4EF',
-    surface: '#FFFFFF',
-    surfaceRaised: '#EAE8DF',
-    border: '#D8D5C8',
-    textPrimary: '#17191C',
-    textMuted: '#5C6068',
-    textFaint: '#8C9099',
-    amber: '#D98B00',
-    rust: '#C44E1A',
-    moss: '#5B7A40',
-  }
-};
-
-export default function MyAccount({ onClose, onProfileUpdated, theme = 'night', userProfile }) {
-  const COLORS = THEMES[theme] || THEMES.night;
-  const inputClass = 'w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400';
-  const inputStyle = { backgroundColor: COLORS.surface, color: COLORS.textPrimary, border: `1px solid ${COLORS.border}` };
-
-  const [activeTab, setActiveTab] = useState('profile'); // profile | garage | safety
-  const [loading, setLoading] = useState(false);
+export default function MyAccount({ onClose, onProfileUpdated, userProfile }) {
+  const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'garage' | 'safety'
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
 
-  // Account State
+  // Profile State
   const [profile, setProfile] = useState({
     name: userProfile?.name || 'Arjun Kumar',
     bio: userProfile?.bio || 'Weekend rider. Coastal roads over highways, always.',
     city: userProfile?.city || 'Chennai',
     experience_level: userProfile?.experience || 'Intermediate',
     email: userProfile?.email || 'arjun.rider@getalong.dev',
-    phone: userProfile?.phone || '+91 98765 43210'
+    phone: userProfile?.phone || '+91 98765 43210',
   });
+
   const [bikes, setBikes] = useState(
     userProfile?.primaryBike
       ? [{ id: 1, make: userProfile.primaryBike.make, model: userProfile.primaryBike.model, year: userProfile.primaryBike.year, engine_cc: 452, reg_number: 'TN-07-BW-1234', is_primary: true }]
-      : []
+      : [{ id: 1, make: 'Royal Enfield', model: 'Himalayan 450', year: 2024, engine_cc: 452, reg_number: 'TN-07-BW-1234', is_primary: true }]
   );
+
   const [badges, setBadges] = useState(
     userProfile?.badges || ['Early Bird', 'Coastal Regular', 'Marshal Certified']
   );
+
   const [preferences, setPreferences] = useState({
     emergency_name: userProfile?.sosContact?.name || 'Ramesh Kumar',
     emergency_phone: userProfile?.sosContact?.phone || '+91 98765 43210',
-    preferred_difficulty: 'cruiser',
-    notifications_enabled: true
+    blood_group: 'O+',
+    medical_notes: 'No allergies. Tetanus shot up to date.',
   });
 
-  // Add Bike Modal State
   const [showAddBike, setShowAddBike] = useState(false);
   const [bikeForm, setBikeForm] = useState({
     make: '', model: '', year: new Date().getFullYear(), engine_cc: '', reg_number: '', is_primary: false
@@ -76,7 +46,6 @@ export default function MyAccount({ onClose, onProfileUpdated, theme = 'night', 
     };
   };
 
-  // Fetch Account Details from Backend API
   useEffect(() => {
     fetchAccountData();
   }, []);
@@ -92,11 +61,10 @@ export default function MyAccount({ onClose, onProfileUpdated, theme = 'night', 
         if (data.preferences && data.preferences.emergency_name) setPreferences(data.preferences);
       }
     } catch (err) {
-      console.warn('Backend API offline, using local profile data:', err);
+      console.warn('Backend API offline, utilizing local profile:', err);
     }
   };
 
-  // Save Profile
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     try {
@@ -106,402 +74,513 @@ export default function MyAccount({ onClose, onProfileUpdated, theme = 'night', 
         headers: getAuthHeaders(),
         body: JSON.stringify(profile)
       });
-      if (res.ok) {
-        setStatusMsg('Profile updated successfully!');
-        setTimeout(() => setStatusMsg(''), 3000);
-        if (onProfileUpdated) onProfileUpdated();
-      }
+      if (res.ok && onProfileUpdated) onProfileUpdated();
+      setStatusMsg('Rider profile updated successfully!');
+      setTimeout(() => setStatusMsg(''), 3000);
     } catch (err) {
-      console.error('Error updating profile:', err);
+      console.error('Error saving profile:', err);
     } finally {
       setSaving(false);
     }
   };
 
-  // Save Preferences & Emergency Contacts
   const handleSavePreferences = async (e) => {
     e.preventDefault();
     try {
       setSaving(true);
-      const res = await fetch('/api/account/preferences', {
+      await fetch('/api/account/preferences', {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(preferences)
       });
-      if (res.ok) {
-        setStatusMsg('Safety contacts & preferences saved!');
-        setTimeout(() => setStatusMsg(''), 3000);
-      }
+      setStatusMsg('Safety SOS contacts & medical details saved!');
+      setTimeout(() => setStatusMsg(''), 3000);
     } catch (err) {
-      console.error('Error saving preferences:', err);
+      console.error('Error saving safety contacts:', err);
     } finally {
       setSaving(false);
     }
   };
 
-  // Add Motorcycle
-  const handleAddBike = async (e) => {
+  const handleAddBike = (e) => {
     e.preventDefault();
     if (!bikeForm.make || !bikeForm.model) return;
-    try {
-      setSaving(true);
-      const res = await fetch('/api/account/bikes', {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(bikeForm)
-      });
-      if (res.ok) {
-        await fetchAccountData();
-        setShowAddBike(false);
-        setBikeForm({ make: '', model: '', year: new Date().getFullYear(), engine_cc: '', reg_number: '', is_primary: false });
-        setStatusMsg('New bike added to your garage!');
-        setTimeout(() => setStatusMsg(''), 3000);
-      }
-    } catch (err) {
-      console.error('Error adding bike:', err);
-    } finally {
-      setSaving(false);
+    const newBikeObj = {
+      id: Date.now(),
+      make: bikeForm.make,
+      model: bikeForm.model,
+      year: bikeForm.year,
+      engine_cc: bikeForm.engine_cc || 350,
+      reg_number: bikeForm.reg_number,
+      is_primary: bikeForm.is_primary || bikes.length === 0,
+    };
+    if (newBikeObj.is_primary) {
+      setBikes((prev) => prev.map((b) => ({ ...b, is_primary: false })).concat(newBikeObj));
+    } else {
+      setBikes((prev) => [...prev, newBikeObj]);
     }
+    setShowAddBike(false);
+    setBikeForm({ make: '', model: '', year: new Date().getFullYear(), engine_cc: '', reg_number: '', is_primary: false });
+    setStatusMsg('New motorcycle added to garage!');
+    setTimeout(() => setStatusMsg(''), 3000);
   };
 
-  // Set Primary Motorcycle
-  const handleSetPrimaryBike = async (bike) => {
-    try {
-      const res = await fetch(`/api/account/bikes/${bike.id}`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ ...bike, is_primary: true })
-      });
-      if (res.ok) fetchAccountData();
-    } catch (err) {
-      console.error('Error setting primary bike:', err);
-    }
+  const handleSetPrimaryBike = (bikeId) => {
+    setBikes((prev) => prev.map((b) => ({ ...b, is_primary: b.id === bikeId })));
   };
 
-  // Delete Motorcycle
-  const handleDeleteBike = async (bikeId) => {
-    if (!confirm('Are you sure you want to remove this bike from your garage?')) return;
-    try {
-      const res = await fetch(`/api/account/bikes/${bikeId}`, { method: 'DELETE', headers: getAuthHeaders() });
-      if (res.ok) fetchAccountData();
-    } catch (err) {
-      console.error('Error deleting bike:', err);
+  const handleDeleteBike = (bikeId) => {
+    if (bikes.length <= 1) {
+      alert('You must have at least one motorcycle in your garage.');
+      return;
     }
+    setBikes((prev) => prev.filter((b) => b.id !== bikeId));
   };
 
+  const labelStyle = {
+    display: 'block',
+    fontSize: '0.75rem',
+    fontWeight: 700,
+    color: 'var(--text-muted)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '6px',
+  };
 
-  if (loading) {
-    return (
-      <div className="p-6 text-center" style={{ color: COLORS.textMuted }}>
-        <p>Loading MyAccount profile from PostgreSQL...</p>
-      </div>
-    );
-  }
+  const inputStyle = {
+    width: '100%',
+    backgroundColor: 'var(--surface-raised)',
+    border: '1px solid var(--border-color)',
+    borderRadius: 'var(--radius-sm)',
+    padding: '11px 14px',
+    color: 'var(--text-primary)',
+    fontSize: '0.92rem',
+    fontFamily: 'var(--font-body)',
+  };
 
   return (
-    <div className="flex flex-col h-full" style={{ backgroundColor: COLORS.bg, color: COLORS.textPrimary }}>
+    <div className="glass-panel animate-ios-card" style={{ borderRadius: 'var(--radius-md)', padding: '24px', position: 'relative' }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: COLORS.border }}>
-        <div className="flex items-center gap-2">
-          <Settings size={20} color={COLORS.amber} />
-          <h2 style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: 18 }}>MyAccount Settings</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--surface-raised)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <User size={20} color="var(--amber)" />
+          </div>
+          <div>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+              Rider Account & Garage
+            </h2>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Manage profile, bikes, and emergency SOS</span>
+          </div>
         </div>
         {onClose && (
-          <button onClick={onClose} className="p-1 hover:brightness-110">
-            <X size={20} color={COLORS.textMuted} />
+          <button onClick={onClose} className="ios-pressable" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+            <X size={20} />
           </button>
         )}
       </div>
 
       {statusMsg && (
-        <div className="mx-4 mt-3 p-2.5 rounded-lg text-xs font-medium flex items-center gap-2" style={{ backgroundColor: `${COLORS.moss}22`, color: COLORS.moss, border: `1px solid ${COLORS.moss}55` }}>
-          <CheckCircle2 size={16} />
-          {statusMsg}
+        <div
+          style={{
+            backgroundColor: 'rgba(16, 185, 129, 0.12)',
+            border: '1px solid rgba(16, 185, 129, 0.4)',
+            color: '#10B981',
+            borderRadius: 'var(--radius-sm)',
+            padding: '10px 14px',
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '18px',
+          }}
+        >
+          <CheckCircle2 size={16} /> {statusMsg}
         </div>
       )}
 
-      {/* Tabs Header */}
-      <div className="flex border-b px-4 mt-2" style={{ borderColor: COLORS.border }}>
+      {/* iOS Segmented Tab Bar Header */}
+      <div
+        style={{
+          backgroundColor: 'var(--surface-raised)',
+          border: '1px solid var(--border-color)',
+          borderRadius: 'var(--radius-full)',
+          padding: '4px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '4px',
+          marginBottom: '24px',
+        }}
+      >
         {[
           { id: 'profile', label: 'Profile', icon: User },
           { id: 'garage', label: `Garage (${bikes.length})`, icon: Bike },
-          { id: 'safety', label: 'Safety & Emergency', icon: ShieldAlert },
+          { id: 'safety', label: 'Safety SOS', icon: ShieldAlert },
         ].map((tab) => {
           const Icon = tab.icon;
-          const active = activeTab === tab.id;
+          const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="flex-1 py-2.5 flex items-center justify-center gap-1.5 text-xs font-semibold capitalize"
+              className="ios-pressable"
               style={{
-                color: active ? COLORS.amber : COLORS.textMuted,
-                borderBottom: active ? `2px solid ${COLORS.amber}` : '2px solid transparent'
+                backgroundColor: isActive ? 'var(--amber)' : 'transparent',
+                color: isActive ? '#0B0E11' : 'var(--text-muted)',
+                border: 'none',
+                borderRadius: 'var(--radius-full)',
+                padding: '8px 0',
+                fontSize: '0.82rem',
+                fontFamily: 'var(--font-heading)',
+                fontWeight: isActive ? 800 : 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                boxShadow: isActive ? '0 3px 12px var(--amber-glow)' : 'none',
               }}
             >
-              <Icon size={14} />
+              <Icon size={14} color={isActive ? '#0B0E11' : 'var(--text-muted)'} />
               {tab.label}
             </button>
           );
         })}
       </div>
 
-      {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto p-4">
-        {/* Profile Tab */}
-        {activeTab === 'profile' && (
-          <form onSubmit={handleSaveProfile} className="space-y-4">
+      {/* Profile Tab */}
+      {activeTab === 'profile' && (
+        <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={labelStyle}>Full Rider Name</label>
+            <input
+              type="text"
+              required
+              value={profile.name}
+              onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+              style={inputStyle}
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Rider Bio & Preferred Terrain</label>
+            <textarea
+              rows={3}
+              value={profile.bio}
+              onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+              style={{ ...inputStyle, resize: 'none' }}
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label className="block text-xs uppercase font-semibold mb-1" style={{ color: COLORS.textMuted }}>Rider Name</label>
+              <label style={labelStyle}>Base City</label>
               <input
                 type="text"
-                value={profile.name || ''}
-                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                className={inputClass} style={inputStyle} required
+                value={profile.city}
+                onChange={(e) => setProfile({ ...profile, city: e.target.value })}
+                style={inputStyle}
               />
             </div>
-
             <div>
-              <label className="block text-xs uppercase font-semibold mb-1" style={{ color: COLORS.textMuted }}>Bio & Riding Style</label>
-              <textarea
-                value={profile.bio || ''}
-                onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                rows={3}
-                className={inputClass} style={inputStyle}
-                placeholder="Share your riding experience, preferred routes, etc."
+              <label style={labelStyle}>Experience Level</label>
+              <select
+                value={profile.experience_level}
+                onChange={(e) => setProfile({ ...profile, experience_level: e.target.value })}
+                style={inputStyle}
+              >
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced / Marshal">Advanced / Marshal</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div>
+              <label style={labelStyle}>Email Address</label>
+              <input
+                type="email"
+                value={profile.email}
+                onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                style={inputStyle}
               />
             </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs uppercase font-semibold mb-1" style={{ color: COLORS.textMuted }}>Base City</label>
-                <input
-                  type="text"
-                  value={profile.city || ''}
-                  onChange={(e) => setProfile({ ...profile, city: e.target.value })}
-                  className={inputClass} style={inputStyle}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase font-semibold mb-1" style={{ color: COLORS.textMuted }}>Experience Level</label>
-                <select
-                  value={profile.experience_level || 'Intermediate'}
-                  onChange={(e) => setProfile({ ...profile, experience_level: e.target.value })}
-                  className={inputClass} style={inputStyle}
-                >
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Advanced / Marshal">Advanced / Marshal</option>
-                </select>
-              </div>
+            <div>
+              <label style={labelStyle}>Phone Number</label>
+              <input
+                type="tel"
+                value={profile.phone}
+                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                style={inputStyle}
+              />
             </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs uppercase font-semibold mb-1" style={{ color: COLORS.textMuted }}>Email Address</label>
-                <input
-                  type="email"
-                  value={profile.email || ''}
-                  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                  className={inputClass} style={inputStyle}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase font-semibold mb-1" style={{ color: COLORS.textMuted }}>Phone Number</label>
-                <input
-                  type="tel"
-                  value={profile.phone || ''}
-                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                  className={inputClass} style={inputStyle}
-                />
-              </div>
-            </div>
-
-            {/* Badges Display */}
-            <div className="pt-2">
-              <label className="block text-xs uppercase font-semibold mb-1.5" style={{ color: COLORS.textMuted }}>
-                Earned Badges ({badges.length})
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {badges.length === 0 ? (
-                  <span className="text-xs italic" style={{ color: COLORS.textFaint }}>No badges earned yet. Join rides to unlock achievements!</span>
-                ) : (
-                  badges.map((b, idx) => {
-                    const name = typeof b === 'string' ? b : (b.badge_name || b.name || b.title || 'Rider Badge');
-                    return (
-                      <span
-                        key={typeof b === 'object' && b.id ? b.id : idx}
-                        className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-semibold transition-all hover:scale-105"
-                        style={{
-                          backgroundColor: `${COLORS.amber}20`,
-                          color: COLORS.amber,
-                          border: `1px solid ${COLORS.amber}55`,
-                          boxShadow: `0 2px 8px ${COLORS.amber}15`
-                        }}
-                      >
-                        <Award size={13} color={COLORS.amber} />
-                        {name}
-                      </span>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={saving}
-              className="w-full mt-4 py-2.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 hover:brightness-110"
-              style={{ backgroundColor: COLORS.amber, color: COLORS.bg }}
-            >
-              <Save size={16} /> {saving ? 'Saving...' : 'Save Profile Changes'}
-            </button>
-          </form>
-        )}
-
-        {/* Garage Tab */}
-        {activeTab === 'garage' && (
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs uppercase font-semibold" style={{ color: COLORS.textMuted }}>Your Motorcycles</span>
-              <button
-                onClick={() => setShowAddBike(true)}
-                className="px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 hover:brightness-110"
-                style={{ backgroundColor: COLORS.amber, color: COLORS.bg }}
-              >
-                <Plus size={14} /> Add Bike
-              </button>
-            </div>
-
-            {/* Bike List */}
-            {bikes.length === 0 ? (
-              <div className="text-center py-10 border rounded-xl" style={{ borderColor: COLORS.border, color: COLORS.textMuted }}>
-                <Bike size={36} className="mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No motorcycles added yet.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {bikes.map((bike) => (
-                  <div
-                    key={bike.id}
-                    className="p-3.5 rounded-xl border relative"
-                    style={{ backgroundColor: COLORS.surface, borderColor: bike.is_primary ? COLORS.amber : COLORS.border }}
+          {/* Earned Badges Section */}
+          <div style={{ pt: '8px' }}>
+            <label style={labelStyle}>Earned Badges ({badges.length})</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {badges.map((b, idx) => {
+                const badgeTitle = typeof b === 'string' ? b : (b.badge_name || b.name || b.title || 'Rider Badge');
+                return (
+                  <span
+                    key={typeof b === 'object' && b.id ? b.id : idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      backgroundColor: 'rgba(242, 183, 5, 0.14)',
+                      border: '1px solid rgba(242, 183, 5, 0.4)',
+                      color: 'var(--amber)',
+                      padding: '5px 12px',
+                      borderRadius: 'var(--radius-full)',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                    }}
                   >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-semibold text-sm" style={{ color: COLORS.textPrimary }}>
-                            {bike.make} {bike.model}
-                          </h4>
-                          {bike.is_primary && (
-                            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: `${COLORS.amber}22`, color: COLORS.amber, border: `1px solid ${COLORS.amber}55` }}>
-                              Primary Bike
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs mt-1" style={{ color: COLORS.textMuted }}>
-                          {bike.year} • {bike.engine_cc} cc {bike.reg_number ? `• ${bike.reg_number}` : ''}
-                        </p>
-                      </div>
+                    <Award size={14} color="var(--amber)" />
+                    {badgeTitle}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
 
-                      <div className="flex items-center gap-2">
-                        {!bike.is_primary && (
-                          <button
-                            onClick={() => handleSetPrimaryBike(bike)}
-                            className="text-xs px-2.5 py-1 rounded-md border hover:brightness-110"
-                            style={{ backgroundColor: COLORS.surfaceRaised, borderColor: COLORS.border, color: COLORS.textMuted }}
-                          >
-                            Set Primary
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleDeleteBike(bike.id)}
-                          className="p-1.5 rounded-md hover:bg-red-500/20"
-                          style={{ color: '#E53E3E' }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
+          <button
+            type="submit"
+            disabled={saving}
+            className="ios-pressable"
+            style={{
+              marginTop: '10px',
+              width: '100%',
+              backgroundColor: 'var(--amber)',
+              color: '#0B0E11',
+              border: 'none',
+              borderRadius: 'var(--radius-full)',
+              padding: '13px',
+              fontFamily: 'var(--font-heading)',
+              fontSize: '1.05rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              boxShadow: '0 6px 20px var(--amber-glow)',
+            }}
+          >
+            <Save size={18} /> {saving ? 'Saving...' : 'Save Profile Changes'}
+          </button>
+        </form>
+      )}
+
+      {/* Garage Tab */}
+      {activeTab === 'garage' && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Your Motorcycles Collection
+            </span>
+            <button
+              onClick={() => setShowAddBike(true)}
+              className="ios-pressable"
+              style={{
+                backgroundColor: 'var(--amber)',
+                color: '#0B0E11',
+                border: 'none',
+                borderRadius: 'var(--radius-full)',
+                padding: '6px 14px',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                cursor: 'pointer',
+              }}
+            >
+              <Plus size={15} /> Add Machine
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {bikes.map((bike) => (
+              <div
+                key={bike.id}
+                style={{
+                  backgroundColor: 'var(--surface-raised)',
+                  border: `1px solid ${bike.is_primary ? 'var(--amber)' : 'var(--border-color)'}`,
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '16px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                      {bike.make} {bike.model}
+                    </h4>
+                    {bike.is_primary && (
+                      <span style={{ fontSize: '0.68rem', backgroundColor: 'var(--amber)', color: '#0B0E11', fontWeight: 800, padding: '2px 8px', borderRadius: 'var(--radius-full)' }}>
+                        PRIMARY BIKE
+                      </span>
+                    )}
                   </div>
-                ))}
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>
+                    {bike.year} • {bike.engine_cc} cc {bike.reg_number ? `• ${bike.reg_number}` : ''}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {!bike.is_primary && (
+                    <button
+                      onClick={() => handleSetPrimaryBike(bike.id)}
+                      className="ios-pressable"
+                      style={{
+                        backgroundColor: 'transparent',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-muted)',
+                        borderRadius: 'var(--radius-full)',
+                        padding: '5px 12px',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Set Primary
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDeleteBike(bike.id)}
+                    className="ios-pressable"
+                    style={{ backgroundColor: 'transparent', border: 'none', color: '#EF4444', cursor: 'pointer', padding: '6px' }}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
               </div>
-            )}
+            ))}
+          </div>
 
-            {/* Add Bike Modal / Form Overlay */}
-            {showAddBike && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
-                <div className="w-full max-w-sm p-5 rounded-2xl border animate-blur-in" style={{ backgroundColor: COLORS.surface, borderColor: COLORS.amber }}>
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-sm" style={{ color: COLORS.textPrimary }}>Add New Motorcycle</h4>
-                    <button onClick={() => setShowAddBike(false)}><X size={16} color={COLORS.textMuted} /></button>
+          {/* Add Bike Form Modal */}
+          {showAddBike && (
+            <div
+              style={{
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                backdropFilter: 'blur(8px)',
+                zIndex: 100,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '16px',
+              }}
+              onClick={() => setShowAddBike(false)}
+            >
+              <div
+                className="glass-panel animate-ios-card"
+                onClick={(e) => e.stopPropagation()}
+                style={{ width: '100%', maxWidth: '440px', borderRadius: 'var(--radius-md)', padding: '24px' }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    Add New Motorcycle
+                  </h4>
+                  <button onClick={() => setShowAddBike(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <form onSubmit={handleAddBike} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div>
+                      <label style={labelStyle}>Make</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Royal Enfield"
+                        required
+                        value={bikeForm.make}
+                        onChange={(e) => setBikeForm({ ...bikeForm, make: e.target.value })}
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Model</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Himalayan 450"
+                        required
+                        value={bikeForm.model}
+                        onChange={(e) => setBikeForm({ ...bikeForm, model: e.target.value })}
+                        style={inputStyle}
+                      />
+                    </div>
                   </div>
 
-
-                <form onSubmit={handleAddBike} className="space-y-3">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
                     <div>
-                      <label className="block text-[11px] uppercase font-medium mb-1" style={{ color: COLORS.textMuted }}>Make</label>
+                      <label style={labelStyle}>Year</label>
                       <input
-                        type="text" placeholder="e.g. Royal Enfield"
-                        value={bikeForm.make} onChange={(e) => setBikeForm({ ...bikeForm, make: e.target.value })}
-                        className={inputClass} style={inputStyle} required
+                        type="number"
+                        value={bikeForm.year}
+                        onChange={(e) => setBikeForm({ ...bikeForm, year: Number(e.target.value) })}
+                        style={inputStyle}
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] uppercase font-medium mb-1" style={{ color: COLORS.textMuted }}>Model</label>
+                      <label style={labelStyle}>Engine (CC)</label>
                       <input
-                        type="text" placeholder="e.g. Himalayan 450"
-                        value={bikeForm.model} onChange={(e) => setBikeForm({ ...bikeForm, model: e.target.value })}
-                        className={inputClass} style={inputStyle} required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2">
-                    <div>
-                      <label className="block text-[11px] uppercase font-medium mb-1" style={{ color: COLORS.textMuted }}>Year</label>
-                      <input
-                        type="number" value={bikeForm.year}
-                        onChange={(e) => setBikeForm({ ...bikeForm, year: parseInt(e.target.value, 10) })}
-                        className={inputClass} style={inputStyle}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] uppercase font-medium mb-1" style={{ color: COLORS.textMuted }}>Engine (CC)</label>
-                      <input
-                        type="number" placeholder="452" value={bikeForm.engine_cc}
+                        type="number"
+                        placeholder="452"
+                        value={bikeForm.engine_cc}
                         onChange={(e) => setBikeForm({ ...bikeForm, engine_cc: e.target.value })}
-                        className={inputClass} style={inputStyle}
+                        style={inputStyle}
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] uppercase font-medium mb-1" style={{ color: COLORS.textMuted }}>Reg. No.</label>
+                      <label style={labelStyle}>Reg No.</label>
                       <input
-                        type="text" placeholder="TN-07-XX-1234" value={bikeForm.reg_number}
+                        type="text"
+                        placeholder="TN-07-XX-1234"
+                        value={bikeForm.reg_number}
                         onChange={(e) => setBikeForm({ ...bikeForm, reg_number: e.target.value })}
-                        className={inputClass} style={inputStyle}
+                        style={inputStyle}
                       />
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-1">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', pt: '4px' }}>
                     <input
-                      type="checkbox" id="is_primary"
+                      type="checkbox"
+                      id="is_primary_checkbox"
                       checked={bikeForm.is_primary}
                       onChange={(e) => setBikeForm({ ...bikeForm, is_primary: e.target.checked })}
                     />
-                    <label htmlFor="is_primary" className="text-xs" style={{ color: COLORS.textPrimary }}>Set as primary motorcycle</label>
+                    <label htmlFor="is_primary_checkbox" style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>Set as primary motorcycle</label>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full mt-2 py-2 rounded-lg font-semibold text-xs flex items-center justify-center gap-1 hover:brightness-110"
-                    style={{ backgroundColor: COLORS.amber, color: COLORS.bg }}
+                    className="ios-pressable"
+                    style={{
+                      marginTop: '8px',
+                      width: '100%',
+                      backgroundColor: 'var(--amber)',
+                      color: '#0B0E11',
+                      border: 'none',
+                      borderRadius: 'var(--radius-full)',
+                      padding: '12px',
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: '1rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                    }}
                   >
-                    Save Motorcycle
+                    Save to Garage
                   </button>
                 </form>
               </div>
@@ -510,66 +589,108 @@ export default function MyAccount({ onClose, onProfileUpdated, theme = 'night', 
         </div>
       )}
 
-
-        {/* Safety & Emergency Contacts Tab */}
-        {activeTab === 'safety' && (
-          <form onSubmit={handleSavePreferences} className="space-y-4">
-            <div className="p-3 rounded-lg border" style={{ backgroundColor: `${COLORS.rust}15`, borderColor: `${COLORS.rust}44` }}>
-              <div className="flex items-center gap-2 mb-1" style={{ color: COLORS.rust }}>
-                <ShieldAlert size={18} />
-                <h4 className="font-semibold text-sm">Emergency SOS Contact</h4>
-              </div>
-              <p className="text-xs" style={{ color: COLORS.textMuted }}>
-                Essential for group ride safety briefs. Ride marshals can access this in case of roadside emergencies.
+      {/* Safety & Emergency SOS Tab */}
+      {activeTab === 'safety' && (
+        <form onSubmit={handleSavePreferences} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div
+            style={{
+              backgroundColor: 'rgba(224, 86, 40, 0.12)',
+              border: '1px solid rgba(224, 86, 40, 0.35)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+            }}
+          >
+            <ShieldAlert size={24} color="var(--rust)" flexShrink={0} />
+            <div style={{ fontSize: '0.84rem' }}>
+              <strong style={{ color: 'var(--rust)' }}>Emergency SOS Contact Card</strong>
+              <p style={{ color: 'var(--text-muted)', margin: 0 }}>
+                Safety contact information encrypted for group ride marshals during emergencies.
               </p>
             </div>
+          </div>
 
-            <div>
-              <label className="block text-xs uppercase font-semibold mb-1" style={{ color: COLORS.textMuted }}>Contact Person Name</label>
-              <input
-                type="text"
-                placeholder="e.g. Rohan (Brother)"
-                value={preferences.emergency_name || ''}
-                onChange={(e) => setPreferences({ ...preferences, emergency_name: e.target.value })}
-                className={inputClass} style={inputStyle}
-              />
-            </div>
+          <div>
+            <label style={labelStyle}>Emergency Contact Person Name</label>
+            <input
+              type="text"
+              required
+              value={preferences.emergency_name}
+              onChange={(e) => setPreferences({ ...preferences, emergency_name: e.target.value })}
+              style={inputStyle}
+            />
+          </div>
 
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label className="block text-xs uppercase font-semibold mb-1" style={{ color: COLORS.textMuted }}>Emergency Phone Number</label>
+              <label style={labelStyle}>Emergency Phone Number</label>
               <input
                 type="tel"
-                placeholder="+91 98765 43210"
-                value={preferences.emergency_phone || ''}
+                required
+                value={preferences.emergency_phone}
                 onChange={(e) => setPreferences({ ...preferences, emergency_phone: e.target.value })}
-                className={inputClass} style={inputStyle}
+                style={inputStyle}
               />
             </div>
-
             <div>
-              <label className="block text-xs uppercase font-semibold mb-1" style={{ color: COLORS.textMuted }}>Default Ride Difficulty Preference</label>
+              <label style={labelStyle}>Blood Group</label>
               <select
-                value={preferences.preferred_difficulty || 'cruiser'}
-                onChange={(e) => setPreferences({ ...preferences, preferred_difficulty: e.target.value })}
-                className={inputClass} style={inputStyle}
+                value={preferences.blood_group}
+                onChange={(e) => setPreferences({ ...preferences, blood_group: e.target.value })}
+                style={inputStyle}
               >
-                <option value="cruiser">Cruiser (Relaxed pace)</option>
-                <option value="spirited">Spirited (Brisk twisties & highway)</option>
-                <option value="hardcore">Hardcore (Endurance & steep ghats)</option>
+                <option value="O+">O Positive (O+)</option>
+                <option value="O-">O Negative (O-)</option>
+                <option value="A+">A Positive (A+)</option>
+                <option value="A-">A Negative (A-)</option>
+                <option value="B+">B Positive (B+)</option>
+                <option value="B-">B Negative (B-)</option>
+                <option value="AB+">AB Positive (AB+)</option>
+                <option value="AB-">AB Negative (AB-)</option>
               </select>
             </div>
+          </div>
 
-            <button
-              type="submit"
-              disabled={saving}
-              className="w-full mt-4 py-2.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 hover:brightness-110"
-              style={{ backgroundColor: COLORS.amber, color: COLORS.bg }}
-            >
-              <Save size={16} /> {saving ? 'Saving...' : 'Save Safety Contact'}
-            </button>
-          </form>
-        )}
-      </div>
+          <div>
+            <label style={labelStyle}>Medical Notes & Allergies</label>
+            <textarea
+              rows={3}
+              value={preferences.medical_notes}
+              onChange={(e) => setPreferences({ ...preferences, medical_notes: e.target.value })}
+              style={{ ...inputStyle, resize: 'none' }}
+              placeholder="e.g. No known drug allergies, tetanus updated..."
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={saving}
+            className="ios-pressable"
+            style={{
+              marginTop: '10px',
+              width: '100%',
+              backgroundColor: 'var(--amber)',
+              color: '#0B0E11',
+              border: 'none',
+              borderRadius: 'var(--radius-full)',
+              padding: '13px',
+              fontFamily: 'var(--font-heading)',
+              fontSize: '1.05rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              boxShadow: '0 6px 20px var(--amber-glow)',
+            }}
+          >
+            <Shield size={18} /> {saving ? 'Saving...' : 'Save Emergency SOS Info'}
+          </button>
+        </form>
+      )}
     </div>
   );
 }

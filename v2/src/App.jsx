@@ -243,15 +243,18 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Container */}
+      {/* Main Content Area with Page Transitions */}
       <main style={{ maxWidth: '680px', margin: '0 auto', padding: '24px 16px' }}>
         {currentTab === 'account' ? (
-          <MyAccount
-            userProfile={userProfile}
-            onUpdateProfile={(updated) => setUserProfile({ ...userProfile, ...updated })}
-          />
+          <div key="account-tab" className="animate-page-slide">
+            <MyAccount
+              userProfile={userProfile}
+              onClose={() => setCurrentTab('feed')}
+              onUpdateProfile={(updated) => setUserProfile({ ...userProfile, ...updated })}
+            />
+          </div>
         ) : currentTab === 'details' && selectedRide ? (
-          <div>
+          <div key="details-tab" className="animate-page-slide">
             {/* Back Navigation Button */}
             <button
               onClick={() => setCurrentTab('feed')}
@@ -310,7 +313,7 @@ export default function App() {
             />
           </div>
         ) : (
-          <div>
+          <div key="feed-tab" className="animate-page-back">
             {/* Live Ride-Day Banner */}
             {todayRide && (
               <RideDayBanner
